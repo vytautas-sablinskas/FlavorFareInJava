@@ -1,4 +1,4 @@
-package com.vytsablinskas.flavorfare.shared.dtos;
+package com.vytsablinskas.flavorfare.shared.dtos.restaurant;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
