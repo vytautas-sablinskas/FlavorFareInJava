@@ -1,18 +1,16 @@
 package com.vytsablinskas.flavorfare.integration.services;
 
-import com.vytsablinskas.flavorfare.services.interfaces.RestaurantService;
-import com.vytsablinskas.flavorfare.shared.constants.Messages;
+import com.vytsablinskas.flavorfare.business.exceptions.ResourceNotFoundException;
+import com.vytsablinskas.flavorfare.business.services.interfaces.RestaurantService;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.UpdateRestaurantDto;
-import com.vytsablinskas.flavorfare.shared.utils.Result;
-import com.vytsablinskas.flavorfare.shared.utils.ResultEntity;
 import com.vytsablinskas.flavorfare.utils.RestaurantTestData;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -50,21 +48,17 @@ public class RestaurantServiceIntegrationTest {
         AddRestaurantDto addRestaurantDtoA = RestaurantTestData.getAddRestaurantDtoA();
         RestaurantDto restaurantDto = underTest.addRestaurant(addRestaurantDtoA);
 
-        ResultEntity<RestaurantDto> result = underTest.getRestaurant(restaurantDto.getId());
+        RestaurantDto result = underTest.getRestaurant(restaurantDto.getId());
 
-        assertThat(result.getEntity())
+        assertThat(result)
                 .isNotNull()
                 .isEqualTo(restaurantDto);
     }
 
     @Test
-    public void getRestaurant_invalidId_returnsNoSuccessInformation() {
-        ResultEntity<RestaurantDto> result = underTest.getRestaurant(1);
-
-        assertThat(result.isSuccess()).isEqualTo(false);
-        assertThat(result.getMessage()).isEqualTo(Messages.GetRestaurantNotFoundMessage(1));
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(result.getEntity()).isNull();
+    public void getRestaurant_invalidId_returnsThrowResourceNotFoundException() {
+        Assertions.assertThatThrownBy(() -> underTest.getRestaurant(1))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -80,44 +74,36 @@ public class RestaurantServiceIntegrationTest {
     public void updateRestaurant_validId_shouldUpdateAndReturnUpdatedRestaurant() {
         AddRestaurantDto restaurantA = RestaurantTestData.getAddRestaurantDtoA();
         RestaurantDto createdRestaurant = underTest.addRestaurant(restaurantA);
-        UpdateRestaurantDto restaurantUpdateDto = RestaurantTestData.getUpdateRestaurantA();
+        UpdateRestaurantDto restaurantUpdateDto = RestaurantTestData.getUpdateRestaurantDtoA();
 
-        ResultEntity<RestaurantDto> result = underTest.updateRestaurant(createdRestaurant.getId(), restaurantUpdateDto);
-
-        assertThat(result.isSuccess()).isTrue();
-        assertThat(result.getEntity().getName()).isEqualTo(restaurantUpdateDto.getName());
+        RestaurantDto result = underTest.updateRestaurant(createdRestaurant.getId(), restaurantUpdateDto);
+        assertThat(result.getName()).isEqualTo(restaurantUpdateDto.getName());
     }
 
     @Test
-    public void updateRestaurant_invalidId_shouldReturnNoSuccessInformation() {
-        UpdateRestaurantDto restaurantUpdateDto = RestaurantTestData.getUpdateRestaurantA();
+    public void updateRestaurant_invalidId_shouldThrowResourceNotFoundException() {
+        UpdateRestaurantDto restaurantUpdateDto = RestaurantTestData.getUpdateRestaurantDtoA();
 
-        ResultEntity<RestaurantDto> result = underTest.updateRestaurant(1, restaurantUpdateDto);
-
-        assertThat(result.isSuccess()).isFalse();
-        assertThat(result.getMessage()).isEqualTo(Messages.GetRestaurantNotFoundMessage(1));
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(result.getEntity()).isNull();
+        Assertions.assertThatThrownBy(() -> underTest.updateRestaurant(1, restaurantUpdateDto))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
-    public void deleteRestaurant_validId_shouldReturnSuccess() {
-        AddRestaurantDto restaurantA = RestaurantTestData.getAddRestaurantDtoA();
-        RestaurantDto createdRestaurant = underTest.addRestaurant(restaurantA);
+    public void deleteRestaurant_validId_shouldDeleteRestaurant() {
+        AddRestaurantDto addRestaurantDtoA = RestaurantTestData.getAddRestaurantDtoA();
+        RestaurantDto createdRestaurantA = underTest.addRestaurant(addRestaurantDtoA);
 
-        Result result = underTest.deleteRestaurant(createdRestaurant.getId());
+        underTest.deleteRestaurant(createdRestaurantA.getId());
+        List<RestaurantDto> restaurants = underTest.getRestaurants();
 
-        assertThat(result.isSuccess()).isTrue();
+        assertThat(restaurants).hasSize(0);
     }
 
     @Test
-    public void deleteRestaurant_invalidId_shouldReturnNoSuccessWithMessage() {
+    public void deleteRestaurant_invalidId_shouldThrowResourceNotFoundException() {
         Integer invalidId = 1;
 
-        Result result = underTest.deleteRestaurant(invalidId);
-
-        assertThat(result.isSuccess()).isFalse();
-        assertThat(result.getMessage()).isEqualTo(Messages.GetRestaurantNotFoundMessage(invalidId));
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        Assertions.assertThatThrownBy(() -> underTest.getRestaurant(1))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 }

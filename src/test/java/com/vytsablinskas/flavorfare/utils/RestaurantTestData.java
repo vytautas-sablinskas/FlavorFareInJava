@@ -26,7 +26,7 @@ public class RestaurantTestData {
                 .build();
     }
 
-    public static UpdateRestaurantDto getUpdateRestaurantA() {
+    public static UpdateRestaurantDto getUpdateRestaurantDtoA() {
         return UpdateRestaurantDto.builder()
                 .name("updated name A")
                 .address("updated address A")
