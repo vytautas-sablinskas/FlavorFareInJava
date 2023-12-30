@@ -59,7 +59,7 @@ public class RestaurantControllerIntegrationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(restaurantDtoJson)
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].id").isNumber()
+                MockMvcResultMatchers.jsonPath("$[0].id").value(restaurantDto.getId())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$[0].name").value(addRestaurantDtoA.getName())
         ).andExpect(
@@ -95,7 +95,7 @@ public class RestaurantControllerIntegrationTests {
                 MockMvcRequestBuilders.get(String.format("/api/v1/restaurants/%d", restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$.id").isNumber()
+                MockMvcResultMatchers.jsonPath("$.id").value(restaurantDto.getId())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.name").value(addRestaurantDtoA.getName())
         ).andExpect(
@@ -110,7 +110,7 @@ public class RestaurantControllerIntegrationTests {
     }
 
     @Test
-    public void getRestaurant_invalidId_shouldThrowResourceNotFoundException() throws Exception {
+    public void getRestaurant_invalidId_shouldReturnHttpStatus404WithErrorMessageInBody() throws Exception {
         Integer invalidId = 1;
         String expectedErrorMessage = Messages.getRestaurantNotFoundMessage(invalidId);
 
@@ -121,6 +121,44 @@ public class RestaurantControllerIntegrationTests {
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
                 MockMvcResultMatchers.content().string(expectedErrorMessage)
+        );
+    }
+
+    @Test
+    public void addRestaurant_shouldReturnHttpStatus201() throws Exception {
+        AddRestaurantDto addRestaurantDtoA = RestaurantTestData.getAddRestaurantDtoA();
+        String addRestaurantDtoJson = objectMapper.writeValueAsString(addRestaurantDtoA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/v1/restaurants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(addRestaurantDtoJson)
+        ).andExpect(
+                MockMvcResultMatchers.status().isCreated()
+        );
+    }
+
+    @Test
+    public void addRestaurant_shouldReturnCreatedRestaurantDto() throws Exception {
+        AddRestaurantDto addRestaurantDto = RestaurantTestData.getAddRestaurantDtoA();
+        String addRestaurantDtoJson = objectMapper.writeValueAsString(addRestaurantDto);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/v1/restaurants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(addRestaurantDtoJson)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.id").isNumber()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value(addRestaurantDto.getName())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.address").value(addRestaurantDto.getAddress())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.openingTime").value(addRestaurantDto.getOpeningTime().toString())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.closingTime").value(addRestaurantDto.getClosingTime().toString())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.intervalBetweenBookings").value(addRestaurantDto.getIntervalBetweenBookings().toString())
         );
     }
 }
