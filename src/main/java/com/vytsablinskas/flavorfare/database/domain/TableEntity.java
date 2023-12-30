@@ -19,6 +19,8 @@ public class TableEntity {
 
     private Integer size;
 
+    private Integer count;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id")
     private RestaurantEntity restaurant;
