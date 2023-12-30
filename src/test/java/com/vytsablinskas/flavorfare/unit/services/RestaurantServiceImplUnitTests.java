@@ -26,8 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 public class RestaurantServiceImplUnitTests {
-    private AutoCloseable closeable;
-
     @Mock
     private ModelMapper modelMapperMock;
 
@@ -131,6 +129,29 @@ public class RestaurantServiceImplUnitTests {
                 .thenReturn(Optional.empty());
 
         Assertions.assertThatThrownBy(() -> underTest.updateRestaurant(invalidId, updateRestaurantDtoA))
+                .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void deleteRestaurant_validId_shouldCallDependencies() {
+        Integer validId = 1;
+        RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
+        Optional<RestaurantEntity> optionalResult = Optional.<RestaurantEntity>of(restaurantEntity);
+        when(restaurantRepositoryMock.findById(validId))
+                .thenReturn(optionalResult);
+
+        underTest.deleteRestaurant(validId);
+
+        verify(restaurantRepositoryMock, times(1)).deleteById(validId);
+    }
+
+    @Test
+    public void deleteRestaurant_invalidId_shouldThrowResourceNotFoundException() {
+        Integer invalidId = 1;
+        when(restaurantRepositoryMock.findById(invalidId))
+                .thenReturn(Optional.empty());
+
+        Assertions.assertThatThrownBy(() -> underTest.deleteRestaurant(invalidId))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 }
