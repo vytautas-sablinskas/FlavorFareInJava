@@ -4,13 +4,17 @@ import com.vytsablinskas.flavorfare.business.exceptions.ResourceNotFoundExceptio
 import com.vytsablinskas.flavorfare.business.services.impl.RestaurantServiceImpl;
 import com.vytsablinskas.flavorfare.database.domain.RestaurantEntity;
 import com.vytsablinskas.flavorfare.database.repositories.RestaurantRepository;
+import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.utils.RestaurantTestData;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
@@ -24,54 +28,76 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 public class RestaurantServiceImplUnitTests {
-    @Mock
-    private ModelMapper modelMapper;
+    private AutoCloseable closeable;
 
     @Mock
-    private RestaurantRepository restaurantRepository;
+    private ModelMapper modelMapperMock;
+
+    @Mock
+    private RestaurantRepository restaurantRepositoryMock;
 
     @InjectMocks
     private RestaurantServiceImpl underTest;
 
     @Test
     public void getRestaurants_shouldCallDependenciesCorrectAmountOfTimes() {
-        when(restaurantRepository.findAll()).thenReturn(Arrays.asList(
+        when(restaurantRepositoryMock.findAll()).thenReturn(Arrays.asList(
                 RestaurantEntity.builder().build(),
                 RestaurantEntity.builder().build()
         ));
 
-        when(modelMapper.map(any(RestaurantEntity.class), eq(RestaurantDto.class)))
+        when(modelMapperMock.map(any(RestaurantEntity.class), eq(RestaurantDto.class)))
                 .thenReturn(RestaurantDto.builder().build());
 
         underTest.getRestaurants();
 
-        verify(restaurantRepository, times(1)).findAll();
-        verify(modelMapper, times(2)).map(any(RestaurantEntity.class), eq(RestaurantDto.class));
+        verify(restaurantRepositoryMock, times(1)).findAll();
+        verify(modelMapperMock, times(2)).map(any(RestaurantEntity.class), eq(RestaurantDto.class));
     }
 
     @Test
     public void getRestaurant_validId_shouldReturnCorrectRestaurantDto() {
         RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
         Optional<RestaurantEntity> optionalResult = Optional.<RestaurantEntity>of(restaurantEntity);
-        when(restaurantRepository.findById(restaurantEntity.getId()))
+        when(restaurantRepositoryMock.findById(restaurantEntity.getId()))
                 .thenReturn(optionalResult);
-        when(modelMapper.map(any(RestaurantEntity.class), eq(RestaurantDto.class)))
+        when(modelMapperMock.map(any(RestaurantEntity.class), eq(RestaurantDto.class)))
                 .thenReturn(RestaurantDto.builder().name(restaurantEntity.getName()).build());
 
         RestaurantDto result = underTest.getRestaurant(restaurantEntity.getId());
 
         assertThat(result.getName()).isEqualTo(restaurantEntity.getName());
-        verify(modelMapper, times(1))
+        verify(modelMapperMock, times(1))
                 .map(any(RestaurantEntity.class), eq(RestaurantDto.class));
     }
 
     @Test
     public void getRestaurant_invalidId_shouldThrowResourceNotFoundException() {
         Integer invalidId = 1;
-        when(restaurantRepository.findById(invalidId))
+        when(restaurantRepositoryMock.findById(invalidId))
                 .thenReturn(Optional.empty());
 
         Assertions.assertThatThrownBy(() -> underTest.getRestaurant(invalidId))
                 .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test void addRestaurant_shouldCallDependencies() {
+        AddRestaurantDto addRestaurantDto = RestaurantTestData.getAddRestaurantDtoB();
+        RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
+        RestaurantDto restaurantDtoA = RestaurantTestData.getRestaurantDtoA();
+
+        when(modelMapperMock.map(any(AddRestaurantDto.class), eq(RestaurantEntity.class)))
+                .thenReturn(restaurantEntity);
+        when(restaurantRepositoryMock.save(any(RestaurantEntity.class)))
+                .thenReturn(restaurantEntity);
+        when(modelMapperMock.map(any(RestaurantEntity.class), eq(RestaurantDto.class)))
+                .thenReturn(restaurantDtoA);
+
+        RestaurantDto result = underTest.addRestaurant(addRestaurantDto);
+
+        verify(modelMapperMock, times(1)).map(any(AddRestaurantDto.class), eq(RestaurantEntity.class));
+        verify(restaurantRepositoryMock, times(1)).save(any(RestaurantEntity.class));
+        verify(modelMapperMock, times(1)).map(any(RestaurantEntity.class), eq(RestaurantDto.class));
+        assertThat(result).isEqualTo(restaurantDtoA);
     }
 }
