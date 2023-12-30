@@ -1,16 +1,15 @@
-package com.vytsablinskas.flavorfare.services.impl;
+package com.vytsablinskas.flavorfare.business.services.impl;
 
+import com.vytsablinskas.flavorfare.business.exceptions.ResourceNotFoundException;
+import com.vytsablinskas.flavorfare.business.services.interfaces.RestaurantService;
 import com.vytsablinskas.flavorfare.database.domain.RestaurantEntity;
 import com.vytsablinskas.flavorfare.database.repositories.RestaurantRepository;
-import com.vytsablinskas.flavorfare.services.interfaces.RestaurantService;
 import com.vytsablinskas.flavorfare.shared.constants.Messages;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.UpdateRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.utils.Result;
-import com.vytsablinskas.flavorfare.shared.utils.ResultEntity;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,22 +39,13 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public ResultEntity<RestaurantDto> getRestaurant(Integer id) {
+    public RestaurantDto getRestaurant(Integer id) {
         Optional<RestaurantEntity> restaurantEntity = repository.findById(id);
         if (restaurantEntity.isEmpty()) {
-            return ResultEntity.<RestaurantDto>builder()
-                    .isSuccess(false)
-                    .message(Messages.GetRestaurantNotFoundMessage(id))
-                    .statusCode(HttpStatus.NOT_FOUND)
-                    .build();
+            throw new ResourceNotFoundException(Messages.GetRestaurantNotFoundMessage(id));
         }
 
-        RestaurantDto restaurantDto = modelMapper.map(restaurantEntity.get(), RestaurantDto.class);
-
-        return ResultEntity.<RestaurantDto>builder()
-                .isSuccess(true)
-                .entity(restaurantDto)
-                .build();
+        return modelMapper.map(restaurantEntity.get(), RestaurantDto.class);
     }
 
     @Override
@@ -66,40 +56,24 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public ResultEntity<RestaurantDto> updateRestaurant(Integer id, UpdateRestaurantDto restaurantUpdateDto) {
+    public RestaurantDto updateRestaurant(Integer id, UpdateRestaurantDto restaurantUpdateDto) {
         Optional<RestaurantEntity> restaurantEntity = repository.findById(id);
         if (restaurantEntity.isEmpty()) {
-            return ResultEntity.<RestaurantDto>builder()
-                    .isSuccess(false)
-                    .message(Messages.GetRestaurantNotFoundMessage(id))
-                    .statusCode(HttpStatus.NOT_FOUND)
-                    .build();
+            throw new ResourceNotFoundException(Messages.GetRestaurantNotFoundMessage(id));
         }
 
         RestaurantEntity updatedRestaurant = repository.save(modelMapper.map(restaurantUpdateDto, RestaurantEntity.class));
-        RestaurantDto restaurantDto = modelMapper.map(updatedRestaurant, RestaurantDto.class);
 
-        return ResultEntity.<RestaurantDto>builder()
-                .isSuccess(true)
-                .entity(restaurantDto)
-                .build();
+        return modelMapper.map(updatedRestaurant, RestaurantDto.class);
     }
 
     @Override
-    public Result deleteRestaurant(Integer id) {
+    public void deleteRestaurant(Integer id) {
         Optional<RestaurantEntity> restaurantEntity = repository.findById(id);
         if (restaurantEntity.isEmpty()) {
-            return Result.builder()
-                    .isSuccess(false)
-                    .message(Messages.GetRestaurantNotFoundMessage(id))
-                    .statusCode(HttpStatus.NOT_FOUND)
-                    .build();
+            throw new ResourceNotFoundException(Messages.GetRestaurantNotFoundMessage(id));
         }
 
         repository.deleteById(id);
-
-        return Result.builder()
-                .isSuccess(true)
-                .build();
     }
 }
