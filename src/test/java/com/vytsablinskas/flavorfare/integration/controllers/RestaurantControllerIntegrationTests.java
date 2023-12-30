@@ -1,16 +1,21 @@
 package com.vytsablinskas.flavorfare.integration.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vytsablinskas.flavorfare.api.controllers.RestaurantController;
+import com.vytsablinskas.flavorfare.business.exceptions.ResourceNotFoundException;
 import com.vytsablinskas.flavorfare.business.services.interfaces.RestaurantService;
+import com.vytsablinskas.flavorfare.shared.constants.Messages;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.utils.RestaurantTestData;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -65,6 +70,57 @@ public class RestaurantControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$[0].closingTime").value(addRestaurantDtoA.getClosingTime().toString())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$[0].intervalBetweenBookings").value(addRestaurantDtoA.getIntervalBetweenBookings().toString())
+        );
+    }
+
+    @Test
+    public void getRestaurant_validId_shouldReturnHttpStatus200() throws Exception {
+        RestaurantDto restaurantDto = restaurantService.addRestaurant(RestaurantTestData.getAddRestaurantDtoA());
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get(String.format("/api/v1/restaurants/%d", restaurantDto.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void getRestaurant_validId_shouldReturnRestaurantDtoInformation() throws Exception {
+        AddRestaurantDto addRestaurantDtoA = RestaurantTestData.getAddRestaurantDtoA();
+        RestaurantDto restaurantDto = restaurantService.addRestaurant(addRestaurantDtoA);
+        String restaurantDtoJson = objectMapper.writeValueAsString(restaurantDto);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get(String.format("/api/v1/restaurants/%d", restaurantDto.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.id").isNumber()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value(addRestaurantDtoA.getName())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.address").value(addRestaurantDtoA.getAddress())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.openingTime").value(addRestaurantDtoA.getOpeningTime().toString())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.closingTime").value(addRestaurantDtoA.getClosingTime().toString())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.intervalBetweenBookings").value(addRestaurantDtoA.getIntervalBetweenBookings().toString())
+        );
+    }
+
+    @Test
+    public void getRestaurant_invalidId_shouldThrowResourceNotFoundException() throws Exception {
+        Integer invalidId = 1;
+        String expectedErrorMessage = Messages.getRestaurantNotFoundMessage(invalidId);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get(String.format("/api/v1/restaurants/%d", invalidId))
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNotFound()
+        ).andExpect(
+                MockMvcResultMatchers.content().string(expectedErrorMessage)
         );
     }
 }
