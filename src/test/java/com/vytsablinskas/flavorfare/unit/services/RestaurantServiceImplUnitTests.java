@@ -6,15 +6,13 @@ import com.vytsablinskas.flavorfare.database.domain.RestaurantEntity;
 import com.vytsablinskas.flavorfare.database.repositories.RestaurantRepository;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
+import com.vytsablinskas.flavorfare.shared.dtos.restaurant.UpdateRestaurantDto;
 import com.vytsablinskas.flavorfare.utils.RestaurantTestData;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
@@ -81,7 +79,8 @@ public class RestaurantServiceImplUnitTests {
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
-    @Test void addRestaurant_shouldCallDependencies() {
+    @Test
+    public void addRestaurant_shouldCallDependencies() {
         AddRestaurantDto addRestaurantDto = RestaurantTestData.getAddRestaurantDtoB();
         RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
         RestaurantDto restaurantDtoA = RestaurantTestData.getRestaurantDtoA();
@@ -99,5 +98,39 @@ public class RestaurantServiceImplUnitTests {
         verify(restaurantRepositoryMock, times(1)).save(any(RestaurantEntity.class));
         verify(modelMapperMock, times(1)).map(any(RestaurantEntity.class), eq(RestaurantDto.class));
         assertThat(result).isEqualTo(restaurantDtoA);
+    }
+
+    @Test
+    public void updateRestaurant_validId_shouldCallDependenciesAndReturnUpdatedRestaurant() {
+        Integer idToUpdate = 1;
+        UpdateRestaurantDto updateRestaurantDtoA = RestaurantTestData.getUpdateRestaurantDtoA();
+        RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
+        Optional<RestaurantEntity> optionalResult = Optional.<RestaurantEntity>of(restaurantEntity);
+        RestaurantDto expectedResult = RestaurantTestData.getRestaurantDtoA();
+
+        when(restaurantRepositoryMock.findById(idToUpdate))
+                .thenReturn(optionalResult);
+        when(modelMapperMock.map(any(UpdateRestaurantDto.class), eq(RestaurantEntity.class)))
+                .thenReturn(restaurantEntity);
+        when(restaurantRepositoryMock.save(any(RestaurantEntity.class)))
+                .thenReturn(restaurantEntity);
+        when(modelMapperMock.map(any(RestaurantEntity.class), eq(RestaurantDto.class)))
+                .thenReturn(expectedResult);
+
+        RestaurantDto result = underTest.updateRestaurant(idToUpdate, updateRestaurantDtoA);
+
+        verify(modelMapperMock, times(1)).map(any(RestaurantEntity.class), eq(RestaurantDto.class));
+        assertThat(result).isEqualTo(expectedResult);
+    }
+
+    @Test
+    public void updateRestaurant_invalidId_shouldThrowResourceNotFoundException() {
+        UpdateRestaurantDto updateRestaurantDtoA = RestaurantTestData.getUpdateRestaurantDtoA();
+        Integer invalidId = 1;
+        when(restaurantRepositoryMock.findById(invalidId))
+                .thenReturn(Optional.empty());
+
+        Assertions.assertThatThrownBy(() -> underTest.updateRestaurant(invalidId, updateRestaurantDtoA))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 }
