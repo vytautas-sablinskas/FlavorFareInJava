@@ -61,7 +61,10 @@ public class RestaurantServiceImpl implements RestaurantService {
             throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(id));
         }
 
-        RestaurantEntity updatedRestaurant = repository.save(modelMapper.map(restaurantUpdateDto, RestaurantEntity.class));
+        RestaurantEntity restaurantEntityToAdd = modelMapper.map(restaurantUpdateDto, RestaurantEntity.class);
+        restaurantEntityToAdd.setId(id);
+
+        RestaurantEntity updatedRestaurant = repository.save(restaurantEntityToAdd);
 
         return modelMapper.map(updatedRestaurant, RestaurantDto.class);
     }
