@@ -5,13 +5,9 @@ import com.vytsablinskas.flavorfare.shared.constants.Prefixes;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.UpdateRestaurantDto;
-import com.vytsablinskas.flavorfare.shared.utils.Result;
-import com.vytsablinskas.flavorfare.shared.utils.ResultEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController

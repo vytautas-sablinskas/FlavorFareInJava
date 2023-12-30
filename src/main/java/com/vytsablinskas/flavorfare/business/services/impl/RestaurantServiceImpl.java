@@ -8,7 +8,6 @@ import com.vytsablinskas.flavorfare.shared.constants.Messages;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.UpdateRestaurantDto;
-import com.vytsablinskas.flavorfare.shared.utils.Result;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +41,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantDto getRestaurant(Integer id) {
         Optional<RestaurantEntity> restaurantEntity = repository.findById(id);
         if (restaurantEntity.isEmpty()) {
-            throw new ResourceNotFoundException(Messages.GetRestaurantNotFoundMessage(id));
+            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(id));
         }
 
         return modelMapper.map(restaurantEntity.get(), RestaurantDto.class);
@@ -59,10 +58,13 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantDto updateRestaurant(Integer id, UpdateRestaurantDto restaurantUpdateDto) {
         Optional<RestaurantEntity> restaurantEntity = repository.findById(id);
         if (restaurantEntity.isEmpty()) {
-            throw new ResourceNotFoundException(Messages.GetRestaurantNotFoundMessage(id));
+            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(id));
         }
 
-        RestaurantEntity updatedRestaurant = repository.save(modelMapper.map(restaurantUpdateDto, RestaurantEntity.class));
+        RestaurantEntity restaurantEntityToAdd = modelMapper.map(restaurantUpdateDto, RestaurantEntity.class);
+        restaurantEntityToAdd.setId(id);
+
+        RestaurantEntity updatedRestaurant = repository.save(restaurantEntityToAdd);
 
         return modelMapper.map(updatedRestaurant, RestaurantDto.class);
     }
@@ -71,7 +73,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public void deleteRestaurant(Integer id) {
         Optional<RestaurantEntity> restaurantEntity = repository.findById(id);
         if (restaurantEntity.isEmpty()) {
-            throw new ResourceNotFoundException(Messages.GetRestaurantNotFoundMessage(id));
+            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(id));
         }
 
         repository.deleteById(id);
