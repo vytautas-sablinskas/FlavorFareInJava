@@ -222,4 +222,31 @@ public class RestaurantControllerIntegrationTests {
                 MockMvcResultMatchers.content().string(expectedErrorMessage)
         );
     }
+
+    @Test
+    public void deleteRestaurant_validId_shouldReturnHttpStatus204() throws Exception {
+        RestaurantDto restaurantDto = restaurantService.addRestaurant(RestaurantTestData.getAddRestaurantDtoA());
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete(String.format("/api/v1/restaurants/%d", restaurantDto.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNoContent()
+        );
+    }
+
+    @Test
+    public void deleteRestaurant_invalidId_shouldReturnHttpStatus404WithErrorMessageInBody() throws Exception {
+        Integer invalidId = 1;
+        String expectedErrorMessage = Messages.getRestaurantNotFoundMessage(invalidId);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete(String.format("/api/v1/restaurants/%d", invalidId))
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNotFound()
+        ).andExpect(
+                MockMvcResultMatchers.content().string(expectedErrorMessage)
+        );
+    }
 }
