@@ -21,11 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class RestaurantServiceIntegrationTest {
+public class RestaurantServiceIntegrationTests {
     private final RestaurantService underTest;
 
     @Autowired
-    public RestaurantServiceIntegrationTest(RestaurantService underTest) {
+    public RestaurantServiceIntegrationTests(RestaurantService underTest) {
         this.underTest = underTest;
     }
 
@@ -103,7 +103,7 @@ public class RestaurantServiceIntegrationTest {
     public void deleteRestaurant_invalidId_shouldThrowResourceNotFoundException() {
         Integer invalidId = 1;
 
-        Assertions.assertThatThrownBy(() -> underTest.getRestaurant(1))
+        Assertions.assertThatThrownBy(() -> underTest.getRestaurant(invalidId))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 }

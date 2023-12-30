@@ -1,22 +1,17 @@
 package com.vytsablinskas.flavorfare.integration.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vytsablinskas.flavorfare.api.controllers.RestaurantController;
-import com.vytsablinskas.flavorfare.business.exceptions.ResourceNotFoundException;
 import com.vytsablinskas.flavorfare.business.services.interfaces.RestaurantService;
 import com.vytsablinskas.flavorfare.shared.constants.Messages;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.UpdateRestaurantDto;
 import com.vytsablinskas.flavorfare.utils.RestaurantTestData;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -31,7 +26,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 public class RestaurantControllerIntegrationTests {
     private final MockMvc mockMvc;
     private final RestaurantService restaurantService;
-
     private final ObjectMapper objectMapper;
 
     @Autowired
