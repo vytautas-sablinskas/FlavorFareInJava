@@ -50,8 +50,9 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public RestaurantDto addRestaurant(AddRestaurantDto restaurant) {
         RestaurantEntity restaurantEntity = modelMapper.map(restaurant, RestaurantEntity.class);
+        RestaurantEntity createdRestaurant = repository.save(restaurantEntity);
 
-        return modelMapper.map(repository.save(restaurantEntity), RestaurantDto.class);
+        return modelMapper.map(createdRestaurant, RestaurantDto.class);
     }
 
     @Override
@@ -63,7 +64,6 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         RestaurantEntity restaurantEntity = restaurantOptionalEntity.get();
         modelMapper.map(restaurantUpdateDto, restaurantEntity);
-
         RestaurantEntity updatedRestaurant = repository.save(restaurantEntity);
 
         return modelMapper.map(updatedRestaurant, RestaurantDto.class);

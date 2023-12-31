@@ -39,18 +39,17 @@ public class TableServiceIntegrationTests {
     @Test
     public void getTables_validRestaurantId_shouldGetAllRestaurantTables() {
         Integer restaurantId = addRestaurantForTesting();
-        AddTableDto addTableDtoA = TableTestData.getAddTableDtoA();
         AddTableDto addTableDtoB = TableTestData.getAddTableDtoB();
-        underTest.addTable(restaurantId, addTableDtoA);
-        TableDto tableDto = underTest.addTable(restaurantId, addTableDtoB);
+        underTest.addTable(restaurantId, TableTestData.getAddTableDtoA());
+        TableDto secondTable = underTest.addTable(restaurantId, addTableDtoB);
 
         List<TableDto> tables = underTest.getTables(restaurantId);
 
         assertThat(tables).hasSize(2);
-        assertThat(tables.get(1).getCount()).isEqualTo(tableDto.getCount());
-        assertThat(tables.get(1).getRestaurantId()).isEqualTo(tableDto.getRestaurantId());
-        assertThat(tables.get(1).getSize()).isEqualTo(tableDto.getSize());
-        assertThat(tables.get(1).getId()).isEqualTo(tableDto.getId());
+        assertThat(tables.get(1).getCount()).isEqualTo(secondTable.getCount());
+        assertThat(tables.get(1).getRestaurantId()).isEqualTo(secondTable.getRestaurantId());
+        assertThat(tables.get(1).getSize()).isEqualTo(secondTable.getSize());
+        assertThat(tables.get(1).getId()).isEqualTo(secondTable.getId());
     }
 
     @Test

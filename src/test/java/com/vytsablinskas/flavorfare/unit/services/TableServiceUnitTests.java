@@ -48,11 +48,9 @@ public class TableServiceUnitTests {
     @Test
     public void getTables_validRestaurantId_getsTablesAndMapsToTableDtoList() {
         Integer validRestaurantId = 1;
-        RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityWithEntityATable();
-        Optional<RestaurantEntity> optionalResult = Optional.<RestaurantEntity>of(restaurantEntity);
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(optionalResult);
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
         when(tableRepositoryMock.findByCondition(validRestaurantId))
                 .thenReturn(TableTestData.getTableEntityListA());
         when(modelMapperMock.map(any(TableEntity.class), eq(TableDto.class)))
@@ -80,17 +78,13 @@ public class TableServiceUnitTests {
     public void getTable_validRestaurantAndTableId_returnsCorrectTable() {
         Integer validRestaurantId = 1;
         Integer validTableId = 1;
-        RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
-        Optional<RestaurantEntity> optionalGoodRestaurantResult = Optional.<RestaurantEntity>of(restaurantEntity);
-        TableEntity tableEntity = TableTestData.getTableEntityA();
-        Optional<TableEntity> optionalGoodTableResult = Optional.<TableEntity>of(tableEntity);
         TableDto expectedTable = TableTestData.getTableDtoA();
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(optionalGoodRestaurantResult);
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
 
         when(tableRepositoryMock.findById(validTableId))
-                .thenReturn(optionalGoodTableResult);
+                .thenReturn(Optional.<TableEntity>of(TableTestData.getTableEntityA()));
 
         when(modelMapperMock.map(any(TableEntity.class), eq(TableDto.class)))
                 .thenReturn(expectedTable);
@@ -117,12 +111,9 @@ public class TableServiceUnitTests {
     public void getTable_invalidTableId_throwsResourceNotFoundException() {
         Integer validRestaurantId = 1;
         Integer invalidTableId = 1;
-        RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
-        Optional<RestaurantEntity> optionalGoodRestaurantResult = Optional.<RestaurantEntity>of(restaurantEntity);
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(optionalGoodRestaurantResult);
-
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
         when(tableRepositoryMock.findById(invalidTableId))
                 .thenReturn(Optional.empty());
 
@@ -134,14 +125,11 @@ public class TableServiceUnitTests {
     @Test
     public void addTable_validRestaurantId_returnsCreatedTableDto() {
         Integer restaurantId = 1;
-        RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
-        AddTableDto addTableDtoA = TableTestData.getAddTableDtoA();
         TableEntity tableEntityA = TableTestData.getTableEntityA();
-        Optional<RestaurantEntity> optionalResult = Optional.<RestaurantEntity>of(restaurantEntity);
         TableDto expectedResult = TableTestData.getTableDtoA();
 
         when(restaurantRepositoryMock.findById(restaurantId))
-                .thenReturn(optionalResult);
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
         when(modelMapperMock.map(any(AddTableDto.class), eq(TableEntity.class)))
                 .thenReturn(tableEntityA);
         when(tableRepositoryMock.save(any(TableEntity.class)))
@@ -149,7 +137,7 @@ public class TableServiceUnitTests {
         when (modelMapperMock.map(any(TableEntity.class), eq(TableDto.class)))
                 .thenReturn(expectedResult);
 
-        TableDto result = underTest.addTable(restaurantId, addTableDtoA);
+        TableDto result = underTest.addTable(restaurantId, TableTestData.getAddTableDtoA());
 
         verify(modelMapperMock, times(1)).map(any(TableEntity.class), eq(TableDto.class));
         assertThat(result).isEqualTo(expectedResult);
@@ -159,13 +147,10 @@ public class TableServiceUnitTests {
     public void addTable_validIdsButAlreadyContainsThatSizeTable_throwsTableSizeAlreadyInDatabaseException() {
         Integer restaurantId = 1;
         AddTableDto addTableDtoA = TableTestData.getAddTableDtoA();
-        RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityWithEntityATable();
-        Optional<RestaurantEntity> optionalResult = Optional.<RestaurantEntity>of(restaurantEntity);
         addTableDtoA.setSize(TableTestData.getTableEntityA().getSize());
 
-
         when(restaurantRepositoryMock.findById(restaurantId))
-                .thenReturn(optionalResult);
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
         when(tableRepositoryMock.findByCondition(restaurantId))
                 .thenReturn(TableTestData.getTableEntityListA());
 
@@ -177,6 +162,7 @@ public class TableServiceUnitTests {
     @Test
     public void addTable_invalidRestaurantId_shouldThrowResourceNotFoundException() {
         Integer invalidId = 1;
+
         when(restaurantRepositoryMock.findById(invalidId))
                 .thenReturn(Optional.empty());
 
@@ -189,24 +175,20 @@ public class TableServiceUnitTests {
     public void updateTable_validIdsAndNoDuplicateSize_returnsUpdatedTable() {
         Integer validRestaurantId = 1;
         Integer validTableId = 1;
-        RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
-        Optional<RestaurantEntity> optionalGoodRestaurantResult = Optional.<RestaurantEntity>of(restaurantEntity);
         TableEntity tableEntity = TableTestData.getTableEntityA();
-        Optional<TableEntity> optionalGoodTableResult = Optional.<TableEntity>of(tableEntity);
-        UpdateTableDto updateTableDtoA = TableTestData.getUpdateTableDtoA();
         TableDto expectedTable = TableTestData.getTableDtoA();
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(optionalGoodRestaurantResult);
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
         when(tableRepositoryMock.findById(validTableId))
-                .thenReturn(optionalGoodTableResult);
+                .thenReturn(Optional.<TableEntity>of(tableEntity));
         doNothing().when(modelMapperMock).map(any(UpdateTableDto.class), any(TableEntity.class));
         when(tableRepositoryMock.save(any(TableEntity.class)))
                 .thenReturn(tableEntity);
         when(modelMapperMock.map(any(TableEntity.class), eq(TableDto.class)))
                 .thenReturn(expectedTable);
 
-        TableDto result = underTest.updateTable(validRestaurantId, validTableId, updateTableDtoA);
+        TableDto result = underTest.updateTable(validRestaurantId, validTableId, TableTestData.getUpdateTableDtoA());
 
         verify(modelMapperMock, times(1)).map(any(TableEntity.class), eq(TableDto.class));
         assertThat(result).isEqualTo(expectedTable);
@@ -215,17 +197,15 @@ public class TableServiceUnitTests {
     @Test
     public void updateTable_validIdsButDuplicateSize_throwsTableSizeAlreadyInDatabaseException() {
         Integer validRestaurantId = 1;
-        Optional<RestaurantEntity> goodRestaurant = Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable());
         TableEntity tableEntityA = TableTestData.getTableEntityA();
-        Optional<TableEntity> goodTable = Optional.<TableEntity>of(tableEntityA);
         UpdateTableDto updateTableDtoA = TableTestData.getUpdateTableDtoA();
         updateTableDtoA.setSize(tableEntityA.getSize());
         Integer tableIdToUpdate = tableEntityA.getTableId() + 1;
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(goodRestaurant);
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
         when(tableRepositoryMock.findById(tableIdToUpdate))
-                .thenReturn(goodTable);
+                .thenReturn(Optional.<TableEntity>of(tableEntityA));
         when(tableRepositoryMock.findByCondition(validRestaurantId))
                 .thenReturn(TableTestData.getTableEntityListA());
 
@@ -238,9 +218,9 @@ public class TableServiceUnitTests {
     public void updateTable_invalidTableId_throwsResourceNotFoundException() {
         Integer validRestaurantId = 1;
         Integer invalidTableId = 1;
-        Optional<RestaurantEntity> goodRestaurant = Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable());
+
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(goodRestaurant);
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
         when(tableRepositoryMock.findById(invalidTableId))
                 .thenReturn(Optional.empty());
 
@@ -281,9 +261,9 @@ public class TableServiceUnitTests {
     public void deleteTable_invalidTableId_throwsResourceNotFoundException() {
         Integer validRestaurantId = 1;
         Integer invalidTableId = 1;
-        Optional<RestaurantEntity> goodRestaurant = Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable());
+
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(goodRestaurant);
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
         when(tableRepositoryMock.findById(invalidTableId))
                 .thenReturn(Optional.empty());
 
