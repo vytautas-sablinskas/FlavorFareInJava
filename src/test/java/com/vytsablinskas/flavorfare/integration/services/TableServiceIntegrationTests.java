@@ -109,6 +109,25 @@ public class TableServiceIntegrationTests {
         ).isInstanceOf(ResourceNotFoundException.class);
     }
 
+    @Test
+    public void updateTable_invalidRestaurantId_shouldThrowResourceNotFoundException() {
+        Integer invalidRestaurantId = 1;
+        Integer shouldNotReachTableId = 1;
+
+        assertThatThrownBy(() ->
+                underTest.updateTable(invalidRestaurantId, shouldNotReachTableId, TableTestData.getUpdateTableDtoA())
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void updateTable_invalidTableId_shouldThrowResourceNotFoundException() {
+        Integer validRestaurantId = addRestaurantForTesting();
+        Integer invalidTableId = 1;
+
+        assertThatThrownBy(() ->
+                underTest.updateTable(validRestaurantId, invalidTableId, TableTestData.getUpdateTableDtoA())
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
     private Integer addRestaurantForTesting() {
         RestaurantDto restaurantDto = restaurantService.addRestaurant(RestaurantTestData.getAddRestaurantDtoA());
 

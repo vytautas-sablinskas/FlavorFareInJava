@@ -9,6 +9,7 @@ import com.vytsablinskas.flavorfare.database.repositories.TableRepository;
 import com.vytsablinskas.flavorfare.shared.constants.Messages;
 import com.vytsablinskas.flavorfare.shared.dtos.table.AddTableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.TableDto;
+import com.vytsablinskas.flavorfare.shared.dtos.table.UpdateTableDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -72,5 +73,25 @@ public class TableServiceImpl implements TableService {
         }
 
         return modelMapper.map(tableEntity.get(), TableDto.class);
+    }
+
+    @Override
+    public TableDto updateTable(Integer restaurantId, Integer tableId, UpdateTableDto updateTableDto) {
+        Optional<RestaurantEntity> restaurantEntity = restaurantRepository.findById(restaurantId);
+        if (restaurantEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
+        }
+
+        Optional<TableEntity> optionalTableEntity = tableRepository.findById(tableId);
+        if (optionalTableEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
+        }
+
+        TableEntity tableEntity = optionalTableEntity.get();
+        modelMapper.map(updateTableDto, tableEntity);
+
+        TableEntity updatedEntity = tableRepository.save(tableEntity);
+
+        return modelMapper.map(updatedEntity, TableDto.class);
     }
 }

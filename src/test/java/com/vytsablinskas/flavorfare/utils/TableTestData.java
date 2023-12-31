@@ -4,6 +4,7 @@ import com.vytsablinskas.flavorfare.database.domain.TableEntity;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.AddTableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.TableDto;
+import com.vytsablinskas.flavorfare.shared.dtos.table.UpdateTableDto;
 
 public class TableTestData {
     public static AddTableDto getAddTableDtoA() {
@@ -15,6 +16,13 @@ public class TableTestData {
 
     public static AddTableDto getAddTableDtoB() {
         return AddTableDto.builder()
+                .size(3)
+                .count(1)
+                .build();
+    }
+
+    public static UpdateTableDto getUpdateTableDtoA() {
+        return UpdateTableDto.builder()
                 .size(3)
                 .count(1)
                 .build();
