@@ -56,15 +56,15 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public RestaurantDto updateRestaurant(Integer id, UpdateRestaurantDto restaurantUpdateDto) {
-        Optional<RestaurantEntity> restaurantEntity = repository.findById(id);
-        if (restaurantEntity.isEmpty()) {
+        Optional<RestaurantEntity> restaurantOptionalEntity = repository.findById(id);
+        if (restaurantOptionalEntity.isEmpty()) {
             throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(id));
         }
 
-        RestaurantEntity restaurantEntityToAdd = modelMapper.map(restaurantUpdateDto, RestaurantEntity.class);
-        restaurantEntityToAdd.setId(id);
+        RestaurantEntity restaurantEntity = restaurantOptionalEntity.get();
+        modelMapper.map(restaurantUpdateDto, restaurantEntity);
 
-        RestaurantEntity updatedRestaurant = repository.save(restaurantEntityToAdd);
+        RestaurantEntity updatedRestaurant = repository.save(restaurantEntity);
 
         return modelMapper.map(updatedRestaurant, RestaurantDto.class);
     }

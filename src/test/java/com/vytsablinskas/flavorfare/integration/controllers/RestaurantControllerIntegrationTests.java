@@ -84,7 +84,6 @@ public class RestaurantControllerIntegrationTests {
     public void getRestaurant_validId_shouldReturnRestaurantDtoInformation() throws Exception {
         AddRestaurantDto addRestaurantDtoA = RestaurantTestData.getAddRestaurantDtoA();
         RestaurantDto restaurantDto = restaurantService.addRestaurant(addRestaurantDtoA);
-        String restaurantDtoJson = objectMapper.writeValueAsString(restaurantDto);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get(String.format("/api/v1/restaurants/%d", restaurantDto.getId()))
