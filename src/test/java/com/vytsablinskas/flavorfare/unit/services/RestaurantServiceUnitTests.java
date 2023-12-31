@@ -106,8 +106,7 @@ public class RestaurantServiceUnitTests {
 
         when(restaurantRepositoryMock.findById(idToUpdate))
                 .thenReturn(optionalResult);
-        when(modelMapperMock.map(any(UpdateRestaurantDto.class), eq(RestaurantEntity.class)))
-                .thenReturn(restaurantEntity);
+        doNothing().when(modelMapperMock).map(any(UpdateRestaurantDto.class), any(RestaurantEntity.class));
         when(restaurantRepositoryMock.save(any(RestaurantEntity.class)))
                 .thenReturn(restaurantEntity);
         when(modelMapperMock.map(any(RestaurantEntity.class), eq(RestaurantDto.class)))
