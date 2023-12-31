@@ -62,7 +62,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         }
 
         RestaurantEntity restaurantEntityToAdd = modelMapper.map(restaurantUpdateDto, RestaurantEntity.class);
-        restaurantEntityToAdd.setId(id);
+        restaurantEntityToAdd.setRestaurantId(id);
 
         RestaurantEntity updatedRestaurant = repository.save(restaurantEntityToAdd);
 

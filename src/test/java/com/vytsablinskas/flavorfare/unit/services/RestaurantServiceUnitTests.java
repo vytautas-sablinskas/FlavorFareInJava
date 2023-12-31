@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class RestaurantServiceImplUnitTests {
+public class RestaurantServiceUnitTests {
     @Mock
     private ModelMapper modelMapperMock;
 
@@ -55,12 +55,12 @@ public class RestaurantServiceImplUnitTests {
     public void getRestaurant_validId_shouldReturnCorrectRestaurantDto() {
         RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
         Optional<RestaurantEntity> optionalResult = Optional.<RestaurantEntity>of(restaurantEntity);
-        when(restaurantRepositoryMock.findById(restaurantEntity.getId()))
+        when(restaurantRepositoryMock.findById(restaurantEntity.getRestaurantId()))
                 .thenReturn(optionalResult);
         when(modelMapperMock.map(any(RestaurantEntity.class), eq(RestaurantDto.class)))
                 .thenReturn(RestaurantDto.builder().name(restaurantEntity.getName()).build());
 
-        RestaurantDto result = underTest.getRestaurant(restaurantEntity.getId());
+        RestaurantDto result = underTest.getRestaurant(restaurantEntity.getRestaurantId());
 
         assertThat(result.getName()).isEqualTo(restaurantEntity.getName());
         verify(modelMapperMock, times(1))

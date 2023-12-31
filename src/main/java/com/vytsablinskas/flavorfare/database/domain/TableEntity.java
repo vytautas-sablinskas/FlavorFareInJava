@@ -15,13 +15,13 @@ import lombok.NoArgsConstructor;
 public class TableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer id;
+    private Integer tableId;
 
     private Integer size;
 
     private Integer count;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurant;
 }

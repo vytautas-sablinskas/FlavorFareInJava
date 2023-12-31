@@ -17,7 +17,7 @@ import java.time.Duration;
 public class RestaurantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer id;
+    private Integer restaurantId;
 
     private String name;
 

@@ -40,7 +40,7 @@ public class RestaurantTestData {
 
     public static RestaurantEntity getRestaurantEntityA() {
         return RestaurantEntity.builder()
-                .id(4)
+                .restaurantId(4)
                 .name("name entity")
                 .address("address entity")
                 .openingTime(Duration.ofHours(3))
