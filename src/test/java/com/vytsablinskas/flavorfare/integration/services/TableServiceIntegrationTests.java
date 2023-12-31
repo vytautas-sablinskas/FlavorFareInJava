@@ -1,11 +1,13 @@
 package com.vytsablinskas.flavorfare.integration.services;
 
 import com.vytsablinskas.flavorfare.business.exceptions.ResourceNotFoundException;
+import com.vytsablinskas.flavorfare.business.exceptions.TableSizeAlreadyInDatabaseException;
 import com.vytsablinskas.flavorfare.business.services.interfaces.RestaurantService;
 import com.vytsablinskas.flavorfare.business.services.interfaces.TableService;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.AddTableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.TableDto;
+import com.vytsablinskas.flavorfare.shared.dtos.table.UpdateTableDto;
 import com.vytsablinskas.flavorfare.utils.RestaurantTestData;
 import com.vytsablinskas.flavorfare.utils.TableTestData;
 import org.junit.jupiter.api.Test;
@@ -103,11 +105,62 @@ public class TableServiceIntegrationTests {
     }
 
     @Test
+    public void addTable_validInputsButContainsSameSizeTableInformation_shouldThrowTableSizeAlreadyInDatabaseException() {
+        Integer restaurantId = addRestaurantForTesting();
+        AddTableDto addTableDtoA = TableTestData.getAddTableDtoA();
+
+        underTest.addTable(restaurantId, addTableDtoA);
+
+        assertThatThrownBy(() ->
+                underTest.addTable(restaurantId, addTableDtoA)
+        ).isInstanceOf(TableSizeAlreadyInDatabaseException.class);
+    }
+
+    @Test
     public void addTable_invalidRestaurantId_shouldThrowResourceNotFoundException() {
         assertThatThrownBy(() ->
                 underTest.addTable(1, TableTestData.getAddTableDtoA())
         ).isInstanceOf(ResourceNotFoundException.class);
     }
+
+    @Test
+    public void updateTable_validTableId_shouldReturnUpdatedTableDto() {
+        Integer validRestaurantId = addRestaurantForTesting();
+        TableDto table = underTest.addTable(validRestaurantId, TableTestData.getAddTableDtoA());
+        UpdateTableDto expectedTable = TableTestData.getUpdateTableDtoA();
+
+        TableDto result = underTest.updateTable(validRestaurantId, table.getId(), expectedTable);
+
+        assertThat(result.getId()).isEqualTo(table.getId());
+        assertThat(result.getSize()).isEqualTo(expectedTable.getSize());
+        assertThat(result.getCount()).isEqualTo(expectedTable.getCount());
+    }
+
+    @Test
+    public void updateTable_validInputsButContainsSameSizeTableInformation_shouldThrowTableSizeAlreadyInDatabaseException() {
+        Integer restaurantId = addRestaurantForTesting();
+        TableDto duplicateSizeTable = underTest.addTable(restaurantId, TableTestData.getAddTableDtoA());
+        TableDto tableToUpdate = underTest.addTable(restaurantId, TableTestData.getAddTableDtoB());
+        UpdateTableDto updateTableDtoA = TableTestData.getUpdateTableDtoA();
+        updateTableDtoA.setSize(duplicateSizeTable.getSize());
+
+        assertThatThrownBy(() ->
+                underTest.updateTable(restaurantId, tableToUpdate.getId(), updateTableDtoA)
+        ).isInstanceOf(TableSizeAlreadyInDatabaseException.class);
+    }
+
+    @Test
+    public void updateTable_validInputsAndContainsSameSizeButUpdateIsOnSameTableAsDuplicateSize_shouldUpdateTable() {
+        Integer restaurantId = addRestaurantForTesting();
+        TableDto tableToUpdate = underTest.addTable(restaurantId, TableTestData.getAddTableDtoA());
+        UpdateTableDto updateTableDtoA = TableTestData.getUpdateTableDtoA();
+
+        TableDto table = underTest.updateTable(restaurantId, tableToUpdate.getId(), updateTableDtoA);
+
+        assertThat(table.getCount()).isEqualTo(updateTableDtoA.getCount());
+        assertThat(table.getSize()).isEqualTo(updateTableDtoA.getSize());
+    }
+
 
     @Test
     public void updateTable_invalidRestaurantId_shouldThrowResourceNotFoundException() {

@@ -1,6 +1,7 @@
 package com.vytsablinskas.flavorfare.business.services.impl;
 
 import com.vytsablinskas.flavorfare.business.exceptions.ResourceNotFoundException;
+import com.vytsablinskas.flavorfare.business.exceptions.TableSizeAlreadyInDatabaseException;
 import com.vytsablinskas.flavorfare.business.services.interfaces.TableService;
 import com.vytsablinskas.flavorfare.database.domain.RestaurantEntity;
 import com.vytsablinskas.flavorfare.database.domain.TableEntity;
@@ -30,20 +31,6 @@ public class TableServiceImpl implements TableService {
     }
 
     @Override
-    public TableDto addTable(Integer restaurantId, AddTableDto addTableDto) {
-        Optional<RestaurantEntity> restaurantEntity = restaurantRepository.findById(restaurantId);
-        if (restaurantEntity.isEmpty()) {
-            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
-        }
-
-        TableEntity tableEntityToAdd = modelMapper.map(addTableDto, TableEntity.class);
-        tableEntityToAdd.setRestaurant(restaurantEntity.get());
-        TableEntity createdTable = tableRepository.save(tableEntityToAdd);
-
-        return modelMapper.map(createdTable, TableDto.class);
-    }
-
-    @Override
     public List<TableDto> getTables(Integer restaurantId) {
         Optional<RestaurantEntity> restaurantEntity = restaurantRepository.findById(restaurantId);
         if (restaurantEntity.isEmpty()) {
@@ -69,10 +56,31 @@ public class TableServiceImpl implements TableService {
 
         Optional<TableEntity> tableEntity = tableRepository.findById(tableId);
         if (tableEntity.isEmpty()) {
-            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
+            throw new ResourceNotFoundException(Messages.getTableNotFoundMessage(tableId));
         }
 
         return modelMapper.map(tableEntity.get(), TableDto.class);
+    }
+
+    @Override
+    public TableDto addTable(Integer restaurantId, AddTableDto addTableDto) {
+        Optional<RestaurantEntity> restaurantEntity = restaurantRepository.findById(restaurantId);
+        if (restaurantEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
+        }
+
+        List<TableEntity> currentTablesInsideRestaurant = restaurantEntity.get().getTables();
+        for (TableEntity table : currentTablesInsideRestaurant) {
+            if (table.getSize().equals(addTableDto.getSize())) {
+                throw new TableSizeAlreadyInDatabaseException(Messages.getTableOfSizeIsDuplicateMessage(addTableDto.getSize()));
+            }
+        }
+
+        TableEntity tableEntityToAdd = modelMapper.map(addTableDto, TableEntity.class);
+        tableEntityToAdd.setRestaurant(restaurantEntity.get());
+        TableEntity createdTable = tableRepository.save(tableEntityToAdd);
+
+        return modelMapper.map(createdTable, TableDto.class);
     }
 
     @Override
@@ -84,7 +92,15 @@ public class TableServiceImpl implements TableService {
 
         Optional<TableEntity> optionalTableEntity = tableRepository.findById(tableId);
         if (optionalTableEntity.isEmpty()) {
-            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
+            throw new ResourceNotFoundException(Messages.getTableNotFoundMessage(tableId));
+        }
+
+        List<TableEntity> currentTablesInsideRestaurant = restaurantEntity.get().getTables();
+        for (TableEntity table : currentTablesInsideRestaurant) {
+            if (table.getSize().equals(updateTableDto.getSize()) &&
+                !table.getTableId().equals(tableId)) {
+                throw new TableSizeAlreadyInDatabaseException(Messages.getTableOfSizeIsDuplicateMessage(updateTableDto.getSize()));
+            }
         }
 
         TableEntity tableEntity = optionalTableEntity.get();

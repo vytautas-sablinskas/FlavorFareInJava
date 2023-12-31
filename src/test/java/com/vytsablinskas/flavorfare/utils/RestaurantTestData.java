@@ -1,11 +1,14 @@
 package com.vytsablinskas.flavorfare.utils;
 
 import com.vytsablinskas.flavorfare.database.domain.RestaurantEntity;
+import com.vytsablinskas.flavorfare.database.domain.TableEntity;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.UpdateRestaurantDto;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RestaurantTestData {
     public static AddRestaurantDto getAddRestaurantDtoA() {
@@ -46,6 +49,22 @@ public class RestaurantTestData {
                 .openingTime(Duration.ofHours(3))
                 .closingTime(Duration.ofHours(15))
                 .intervalBetweenBookings(Duration.ofHours(2))
+                .tables(new ArrayList<>())
+                .build();
+    }
+
+    public static RestaurantEntity getRestaurantEntityWithEntityATable() {
+        List<TableEntity> tables = new ArrayList<>();
+        tables.add(TableTestData.getTableEntityA());
+
+        return RestaurantEntity.builder()
+                .restaurantId(4)
+                .name("name entity")
+                .address("address entity")
+                .openingTime(Duration.ofHours(3))
+                .closingTime(Duration.ofHours(15))
+                .intervalBetweenBookings(Duration.ofHours(2))
+                .tables(tables)
                 .build();
     }
 

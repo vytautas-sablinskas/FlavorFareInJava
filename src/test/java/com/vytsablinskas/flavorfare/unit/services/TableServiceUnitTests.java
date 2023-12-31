@@ -1,17 +1,17 @@
 package com.vytsablinskas.flavorfare.unit.services;
 
 import com.vytsablinskas.flavorfare.business.exceptions.ResourceNotFoundException;
+import com.vytsablinskas.flavorfare.business.exceptions.TableSizeAlreadyInDatabaseException;
 import com.vytsablinskas.flavorfare.business.services.impl.TableServiceImpl;
 import com.vytsablinskas.flavorfare.database.domain.RestaurantEntity;
 import com.vytsablinskas.flavorfare.database.domain.TableEntity;
 import com.vytsablinskas.flavorfare.database.repositories.RestaurantRepository;
 import com.vytsablinskas.flavorfare.database.repositories.TableRepository;
-import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.AddTableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.TableDto;
+import com.vytsablinskas.flavorfare.shared.dtos.table.UpdateTableDto;
 import com.vytsablinskas.flavorfare.utils.RestaurantTestData;
 import com.vytsablinskas.flavorfare.utils.TableTestData;
-import jakarta.persistence.SqlResultSetMapping;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -157,6 +157,22 @@ public class TableServiceUnitTests {
     }
 
     @Test
+    public void addTable_validIdsButAlreadyContainsThatSizeTable_throwsTableSizeAlreadyInDatabaseException() {
+        Integer restaurantId = 1;
+        AddTableDto addTableDtoA = TableTestData.getAddTableDtoA();
+        RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityWithEntityATable();
+        Optional<RestaurantEntity> optionalResult = Optional.<RestaurantEntity>of(restaurantEntity);
+        addTableDtoA.setSize(TableTestData.getTableEntityA().getSize());
+
+        when(restaurantRepositoryMock.findById(restaurantId))
+                .thenReturn(optionalResult);
+
+        assertThatThrownBy(() ->
+                underTest.addTable(restaurantId, addTableDtoA)
+        ).isInstanceOf(TableSizeAlreadyInDatabaseException.class);
+    }
+
+    @Test
     public void addTable_invalidRestaurantId_shouldThrowResourceNotFoundException() {
         Integer invalidId = 1;
         when(restaurantRepositoryMock.findById(invalidId))
@@ -164,6 +180,81 @@ public class TableServiceUnitTests {
 
         assertThatThrownBy(() ->
                 underTest.addTable(invalidId, TableTestData.getAddTableDtoA())
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void updateTable_validIdsAndNoDuplicateSize_returnsUpdatedTable() {
+        Integer validRestaurantId = 1;
+        Integer validTableId = 1;
+        RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
+        Optional<RestaurantEntity> optionalGoodRestaurantResult = Optional.<RestaurantEntity>of(restaurantEntity);
+        TableEntity tableEntity = TableTestData.getTableEntityA();
+        Optional<TableEntity> optionalGoodTableResult = Optional.<TableEntity>of(tableEntity);
+        UpdateTableDto updateTableDtoA = TableTestData.getUpdateTableDtoA();
+        TableDto expectedTable = TableTestData.getTableDtoA();
+
+        when(restaurantRepositoryMock.findById(validRestaurantId))
+                .thenReturn(optionalGoodRestaurantResult);
+        when(tableRepositoryMock.findById(validTableId))
+                .thenReturn(optionalGoodTableResult);
+        doNothing().when(modelMapperMock).map(any(UpdateTableDto.class), any(TableEntity.class));
+        when(tableRepositoryMock.save(any(TableEntity.class)))
+                .thenReturn(tableEntity);
+        when(modelMapperMock.map(any(TableEntity.class), eq(TableDto.class)))
+                .thenReturn(expectedTable);
+
+        TableDto result = underTest.updateTable(validRestaurantId, validTableId, updateTableDtoA);
+
+        verify(modelMapperMock, times(1)).map(any(TableEntity.class), eq(TableDto.class));
+        assertThat(result).isEqualTo(expectedTable);
+    }
+
+    @Test
+    public void updateTable_validIdsButDuplicateSize_throwsTableSizeAlreadyInDatabaseException() {
+        Integer validRestaurantId = 1;
+        Optional<RestaurantEntity> goodRestaurant = Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable());
+        TableEntity tableEntityA = TableTestData.getTableEntityA();
+        Optional<TableEntity> goodTable = Optional.<TableEntity>of(tableEntityA);
+        UpdateTableDto updateTableDtoA = TableTestData.getUpdateTableDtoA();
+        updateTableDtoA.setSize(tableEntityA.getSize());
+        Integer tableIdToUpdate = tableEntityA.getTableId() + 1;
+
+        when(restaurantRepositoryMock.findById(validRestaurantId))
+                .thenReturn(goodRestaurant);
+        when(tableRepositoryMock.findById(tableIdToUpdate))
+                .thenReturn(goodTable);
+
+        assertThatThrownBy(() ->
+                underTest.updateTable(validRestaurantId, tableIdToUpdate, updateTableDtoA)
+        ).isInstanceOf(TableSizeAlreadyInDatabaseException.class);
+    }
+
+    @Test
+    public void updateTable_invalidTableId_throwsResourceNotFoundException() {
+        Integer validRestaurantId = 1;
+        Integer invalidTableId = 1;
+        Optional<RestaurantEntity> goodRestaurant = Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable());
+        when(restaurantRepositoryMock.findById(validRestaurantId))
+                .thenReturn(goodRestaurant);
+        when(tableRepositoryMock.findById(invalidTableId))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                underTest.updateTable(validRestaurantId, invalidTableId, TableTestData.getUpdateTableDtoA())
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void updateTable_invalidRestaurantId_throwsResourceNotFoundException() {
+        Integer invalidRestaurantId = 1;
+        Integer validTableId = 1;
+
+        when(restaurantRepositoryMock.findById(invalidRestaurantId))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                underTest.updateTable(invalidRestaurantId, validTableId, TableTestData.getUpdateTableDtoA())
         ).isInstanceOf(ResourceNotFoundException.class);
     }
 }
