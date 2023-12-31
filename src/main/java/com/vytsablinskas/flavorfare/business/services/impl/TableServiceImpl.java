@@ -12,7 +12,9 @@ import com.vytsablinskas.flavorfare.shared.dtos.table.TableDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @Service
 public class TableServiceImpl implements TableService {
@@ -38,5 +40,22 @@ public class TableServiceImpl implements TableService {
         TableEntity createdTable = tableRepository.save(tableEntityToAdd);
 
         return modelMapper.map(createdTable, TableDto.class);
+    }
+
+    @Override
+    public List<TableDto> getTables(Integer restaurantId) {
+        Optional<RestaurantEntity> restaurantEntity = restaurantRepository.findById(restaurantId);
+        if (restaurantEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
+        }
+
+        List<TableEntity> tables = StreamSupport
+                .stream(tableRepository.findAll().spliterator(), false)
+                .toList();
+
+        return tables
+                .stream()
+                .map(entity -> modelMapper.map(entity, TableDto.class))
+                .toList();
     }
 }

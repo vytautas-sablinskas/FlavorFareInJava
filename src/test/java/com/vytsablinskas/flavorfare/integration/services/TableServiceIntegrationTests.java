@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -30,6 +32,32 @@ public class TableServiceIntegrationTests {
     public TableServiceIntegrationTests(TableService tableService, RestaurantService restaurantService) {
         this.restaurantService = restaurantService;
         this.underTest = tableService;
+    }
+
+    @Test
+    public void getTables_validRestaurantId_shouldGetAllRestaurantTables() {
+        Integer restaurantId = addRestaurantForTesting();
+        AddTableDto addTableDtoA = TableTestData.getAddTableDtoA();
+        AddTableDto addTableDtoB = TableTestData.getAddTableDtoB();
+        underTest.addTable(restaurantId, addTableDtoA);
+        TableDto tableDto = underTest.addTable(restaurantId, addTableDtoB);
+
+        List<TableDto> tables = underTest.getTables(restaurantId);
+
+        assertThat(tables).hasSize(2);
+        assertThat(tables.get(1).getCount()).isEqualTo(tableDto.getCount());
+        assertThat(tables.get(1).getRestaurantId()).isEqualTo(tableDto.getRestaurantId());
+        assertThat(tables.get(1).getSize()).isEqualTo(tableDto.getSize());
+        assertThat(tables.get(1).getId()).isEqualTo(tableDto.getId());
+    }
+
+    @Test
+    public void getTables_invalidId_shouldThrowResourceNotFoundException() {
+        Integer invalidRestaurantId = 1;
+
+        assertThatThrownBy(() ->
+                underTest.getTables(invalidRestaurantId)
+        ).isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test

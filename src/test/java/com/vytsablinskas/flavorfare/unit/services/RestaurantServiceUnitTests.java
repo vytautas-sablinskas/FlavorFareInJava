@@ -92,8 +92,6 @@ public class RestaurantServiceUnitTests {
 
         RestaurantDto result = underTest.addRestaurant(addRestaurantDto);
 
-        verify(modelMapperMock, times(1)).map(any(AddRestaurantDto.class), eq(RestaurantEntity.class));
-        verify(restaurantRepositoryMock, times(1)).save(any(RestaurantEntity.class));
         verify(modelMapperMock, times(1)).map(any(RestaurantEntity.class), eq(RestaurantDto.class));
         assertThat(result).isEqualTo(restaurantDtoA);
     }

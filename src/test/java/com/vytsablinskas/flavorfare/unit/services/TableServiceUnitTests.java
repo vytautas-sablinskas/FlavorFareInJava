@@ -6,6 +6,7 @@ import com.vytsablinskas.flavorfare.database.domain.RestaurantEntity;
 import com.vytsablinskas.flavorfare.database.domain.TableEntity;
 import com.vytsablinskas.flavorfare.database.repositories.RestaurantRepository;
 import com.vytsablinskas.flavorfare.database.repositories.TableRepository;
+import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.AddTableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.TableDto;
 import com.vytsablinskas.flavorfare.utils.RestaurantTestData;
@@ -17,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,6 +41,40 @@ public class TableServiceUnitTests {
 
     @InjectMocks
     private TableServiceImpl underTest;
+
+    @Test
+    public void getTables_validRestaurantId_getsTablesAndMapsToTableDtoList() {
+        Integer validRestaurantId = 1;
+        RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
+        Optional<RestaurantEntity> optionalResult = Optional.<RestaurantEntity>of(restaurantEntity);
+
+        when(restaurantRepositoryMock.findById(validRestaurantId))
+                .thenReturn(optionalResult);
+        when(tableRepositoryMock.findAll()).thenReturn(Arrays.asList(
+                TableEntity.builder().build(),
+                TableEntity.builder().build()
+        ));
+        when(modelMapperMock.map(any(TableEntity.class), eq(TableDto.class)))
+                .thenReturn(TableDto.builder().build());
+
+        List<TableDto> tables = underTest.getTables(validRestaurantId);
+
+        verify(tableRepositoryMock, times(1)).findAll();
+        verify(modelMapperMock, times(2)).map(any(TableEntity.class), eq(TableDto.class));
+        assertThat(tables).hasSize(2);
+    }
+
+    @Test
+    public void getTables_invalidRestaurantId_throwsResourceNotFoundException() {
+        Integer invalidRestaurantId = 1;
+
+        when(restaurantRepositoryMock.findById(invalidRestaurantId))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                underTest.getTables(invalidRestaurantId)
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
 
     @Test
     public void addRestaurant_validRestaurantId_returnsCreatedTableDto() {

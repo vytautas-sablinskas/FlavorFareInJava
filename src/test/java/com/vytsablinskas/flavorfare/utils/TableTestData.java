@@ -13,6 +13,13 @@ public class TableTestData {
                 .build();
     }
 
+    public static AddTableDto getAddTableDtoB() {
+        return AddTableDto.builder()
+                .size(3)
+                .count(1)
+                .build();
+    }
+
     public static TableDto getTableDtoA() {
         return TableDto.builder()
                 .count(1)
