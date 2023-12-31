@@ -3,6 +3,7 @@ package com.vytsablinskas.flavorfare.integration.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vytsablinskas.flavorfare.business.services.interfaces.RestaurantService;
 import com.vytsablinskas.flavorfare.shared.constants.Messages;
+import com.vytsablinskas.flavorfare.shared.constants.endpoints.RestaurantEndpoints;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.UpdateRestaurantDto;
@@ -38,7 +39,7 @@ public class RestaurantControllerIntegrationTests {
     @Test
     public void getRestaurants_shouldReturnHttpStatus200() throws Exception {
         mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/v1/restaurants")
+                MockMvcRequestBuilders.get(RestaurantEndpoints.restaurantsEndpoint)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -50,7 +51,7 @@ public class RestaurantControllerIntegrationTests {
         String restaurantDtoJson = objectMapper.writeValueAsString(restaurantDto);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/v1/restaurants")
+                MockMvcRequestBuilders.get(RestaurantEndpoints.restaurantsEndpoint)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(restaurantDtoJson)
         ).andExpect(
@@ -73,7 +74,7 @@ public class RestaurantControllerIntegrationTests {
         RestaurantDto restaurantDto = restaurantService.addRestaurant(RestaurantTestData.getAddRestaurantDtoA());
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get(String.format("/api/v1/restaurants/%d", restaurantDto.getId()))
+                MockMvcRequestBuilders.get(RestaurantEndpoints.restaurantEndpoint(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isOk()
@@ -86,7 +87,7 @@ public class RestaurantControllerIntegrationTests {
         RestaurantDto restaurantDto = restaurantService.addRestaurant(addRestaurantDtoA);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get(String.format("/api/v1/restaurants/%d", restaurantDto.getId()))
+                MockMvcRequestBuilders.get(RestaurantEndpoints.restaurantEndpoint(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.id").value(restaurantDto.getId())
@@ -109,7 +110,7 @@ public class RestaurantControllerIntegrationTests {
         String expectedErrorMessage = Messages.getRestaurantNotFoundMessage(invalidId);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get(String.format("/api/v1/restaurants/%d", invalidId))
+                MockMvcRequestBuilders.get(RestaurantEndpoints.restaurantEndpoint(invalidId))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
@@ -124,7 +125,7 @@ public class RestaurantControllerIntegrationTests {
         String addRestaurantDtoJson = objectMapper.writeValueAsString(addRestaurantDtoA);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.post("/api/v1/restaurants")
+                MockMvcRequestBuilders.post(RestaurantEndpoints.addRestaurantEndpoint)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addRestaurantDtoJson)
         ).andExpect(
@@ -138,7 +139,7 @@ public class RestaurantControllerIntegrationTests {
         String addRestaurantDtoJson = objectMapper.writeValueAsString(addRestaurantDto);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.post("/api/v1/restaurants")
+                MockMvcRequestBuilders.post(RestaurantEndpoints.addRestaurantEndpoint)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addRestaurantDtoJson)
         ).andExpect(
@@ -164,7 +165,7 @@ public class RestaurantControllerIntegrationTests {
         String updateRestaurantDtoJson = objectMapper.writeValueAsString(updateRestaurantDtoA);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.put(String.format("/api/v1/restaurants/%d", restaurantDto.getId()))
+                MockMvcRequestBuilders.put(RestaurantEndpoints.updateRestaurantEndpoint(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateRestaurantDtoJson)
         ).andExpect(
@@ -179,7 +180,7 @@ public class RestaurantControllerIntegrationTests {
         String updateRestaurantDtoJson = objectMapper.writeValueAsString(updateRestaurantDtoA);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.put(String.format("/api/v1/restaurants/%d", restaurantDto.getId()))
+                MockMvcRequestBuilders.put(RestaurantEndpoints.updateRestaurantEndpoint(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateRestaurantDtoJson)
         ).andExpect(
@@ -206,7 +207,7 @@ public class RestaurantControllerIntegrationTests {
 
 
         mockMvc.perform(
-                MockMvcRequestBuilders.put(String.format("/api/v1/restaurants/%d", invalidId))
+                MockMvcRequestBuilders.put(RestaurantEndpoints.updateRestaurantEndpoint(invalidId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateRestaurantDto)
         ).andExpect(
@@ -221,7 +222,7 @@ public class RestaurantControllerIntegrationTests {
         RestaurantDto restaurantDto = restaurantService.addRestaurant(RestaurantTestData.getAddRestaurantDtoA());
 
         mockMvc.perform(
-                MockMvcRequestBuilders.delete(String.format("/api/v1/restaurants/%d", restaurantDto.getId()))
+                MockMvcRequestBuilders.delete(RestaurantEndpoints.deleteRestaurantEndpoint(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isNoContent()
@@ -234,7 +235,7 @@ public class RestaurantControllerIntegrationTests {
         String expectedErrorMessage = Messages.getRestaurantNotFoundMessage(invalidId);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.delete(String.format("/api/v1/restaurants/%d", invalidId))
+                MockMvcRequestBuilders.delete(RestaurantEndpoints.deleteRestaurantEndpoint(invalidId))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()

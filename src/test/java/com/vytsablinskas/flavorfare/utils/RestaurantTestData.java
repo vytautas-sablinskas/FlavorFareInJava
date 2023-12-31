@@ -1,14 +1,11 @@
 package com.vytsablinskas.flavorfare.utils;
 
 import com.vytsablinskas.flavorfare.database.domain.RestaurantEntity;
-import com.vytsablinskas.flavorfare.database.domain.TableEntity;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.UpdateRestaurantDto;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RestaurantTestData {
     public static AddRestaurantDto getAddRestaurantDtoA() {

@@ -11,7 +11,6 @@ import com.vytsablinskas.flavorfare.shared.constants.Messages;
 import com.vytsablinskas.flavorfare.shared.dtos.table.AddTableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.TableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.UpdateTableDto;
-import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 

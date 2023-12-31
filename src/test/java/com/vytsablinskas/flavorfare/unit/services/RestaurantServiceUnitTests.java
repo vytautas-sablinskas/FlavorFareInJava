@@ -41,7 +41,6 @@ public class RestaurantServiceUnitTests {
                 RestaurantEntity.builder().build(),
                 RestaurantEntity.builder().build()
         ));
-
         when(modelMapperMock.map(any(RestaurantEntity.class), eq(RestaurantDto.class)))
                 .thenReturn(RestaurantDto.builder().build());
 
@@ -54,9 +53,9 @@ public class RestaurantServiceUnitTests {
     @Test
     public void getRestaurant_validId_shouldReturnCorrectRestaurantDto() {
         RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
-        Optional<RestaurantEntity> optionalResult = Optional.<RestaurantEntity>of(restaurantEntity);
+
         when(restaurantRepositoryMock.findById(restaurantEntity.getRestaurantId()))
-                .thenReturn(optionalResult);
+                .thenReturn(Optional.<RestaurantEntity>of(restaurantEntity));
         when(modelMapperMock.map(any(RestaurantEntity.class), eq(RestaurantDto.class)))
                 .thenReturn(RestaurantDto.builder().name(restaurantEntity.getName()).build());
 
@@ -79,7 +78,6 @@ public class RestaurantServiceUnitTests {
 
     @Test
     public void addRestaurant_shouldCallDependencies() {
-        AddRestaurantDto addRestaurantDto = RestaurantTestData.getAddRestaurantDtoB();
         RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
         RestaurantDto restaurantDtoA = RestaurantTestData.getRestaurantDtoA();
 
@@ -90,7 +88,7 @@ public class RestaurantServiceUnitTests {
         when(modelMapperMock.map(any(RestaurantEntity.class), eq(RestaurantDto.class)))
                 .thenReturn(restaurantDtoA);
 
-        RestaurantDto result = underTest.addRestaurant(addRestaurantDto);
+        RestaurantDto result = underTest.addRestaurant(RestaurantTestData.getAddRestaurantDtoB());
 
         verify(modelMapperMock, times(1)).map(any(RestaurantEntity.class), eq(RestaurantDto.class));
         assertThat(result).isEqualTo(restaurantDtoA);
@@ -99,20 +97,18 @@ public class RestaurantServiceUnitTests {
     @Test
     public void updateRestaurant_validId_shouldCallDependenciesAndReturnUpdatedRestaurant() {
         Integer idToUpdate = 1;
-        UpdateRestaurantDto updateRestaurantDtoA = RestaurantTestData.getUpdateRestaurantDtoA();
         RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
-        Optional<RestaurantEntity> optionalResult = Optional.<RestaurantEntity>of(restaurantEntity);
         RestaurantDto expectedResult = RestaurantTestData.getRestaurantDtoA();
 
         when(restaurantRepositoryMock.findById(idToUpdate))
-                .thenReturn(optionalResult);
+                .thenReturn(Optional.<RestaurantEntity>of(restaurantEntity));
         doNothing().when(modelMapperMock).map(any(UpdateRestaurantDto.class), any(RestaurantEntity.class));
         when(restaurantRepositoryMock.save(any(RestaurantEntity.class)))
                 .thenReturn(restaurantEntity);
         when(modelMapperMock.map(any(RestaurantEntity.class), eq(RestaurantDto.class)))
                 .thenReturn(expectedResult);
 
-        RestaurantDto result = underTest.updateRestaurant(idToUpdate, updateRestaurantDtoA);
+        RestaurantDto result = underTest.updateRestaurant(idToUpdate, RestaurantTestData.getUpdateRestaurantDtoA());
 
         verify(modelMapperMock, times(1)).map(any(RestaurantEntity.class), eq(RestaurantDto.class));
         assertThat(result).isEqualTo(expectedResult);
@@ -120,22 +116,21 @@ public class RestaurantServiceUnitTests {
 
     @Test
     public void updateRestaurant_invalidId_shouldThrowResourceNotFoundException() {
-        UpdateRestaurantDto updateRestaurantDtoA = RestaurantTestData.getUpdateRestaurantDtoA();
         Integer invalidId = 1;
+
         when(restaurantRepositoryMock.findById(invalidId))
                 .thenReturn(Optional.empty());
 
-        Assertions.assertThatThrownBy(() -> underTest.updateRestaurant(invalidId, updateRestaurantDtoA))
+        Assertions.assertThatThrownBy(() -> underTest.updateRestaurant(invalidId, RestaurantTestData.getUpdateRestaurantDtoA()))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     public void deleteRestaurant_validId_shouldCallDependencies() {
         Integer validId = 1;
-        RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
-        Optional<RestaurantEntity> optionalResult = Optional.<RestaurantEntity>of(restaurantEntity);
+
         when(restaurantRepositoryMock.findById(validId))
-                .thenReturn(optionalResult);
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
 
         underTest.deleteRestaurant(validId);
 
@@ -145,6 +140,7 @@ public class RestaurantServiceUnitTests {
     @Test
     public void deleteRestaurant_invalidId_shouldThrowResourceNotFoundException() {
         Integer invalidId = 1;
+
         when(restaurantRepositoryMock.findById(invalidId))
                 .thenReturn(Optional.empty());
 

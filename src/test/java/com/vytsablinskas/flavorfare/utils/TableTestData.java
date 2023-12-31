@@ -1,7 +1,6 @@
 package com.vytsablinskas.flavorfare.utils;
 
 import com.vytsablinskas.flavorfare.database.domain.TableEntity;
-import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.AddTableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.TableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.UpdateTableDto;
