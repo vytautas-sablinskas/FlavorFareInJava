@@ -58,4 +58,19 @@ public class TableServiceImpl implements TableService {
                 .map(entity -> modelMapper.map(entity, TableDto.class))
                 .toList();
     }
+
+    @Override
+    public TableDto getTable(Integer restaurantId, Integer tableId) {
+        Optional<RestaurantEntity> restaurantEntity = restaurantRepository.findById(restaurantId);
+        if (restaurantEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
+        }
+
+        Optional<TableEntity> tableEntity = tableRepository.findById(tableId);
+        if (tableEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
+        }
+
+        return modelMapper.map(tableEntity.get(), TableDto.class);
+    }
 }

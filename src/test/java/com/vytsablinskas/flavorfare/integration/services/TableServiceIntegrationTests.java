@@ -52,11 +52,41 @@ public class TableServiceIntegrationTests {
     }
 
     @Test
-    public void getTables_invalidId_shouldThrowResourceNotFoundException() {
+    public void getTables_invalidRestaurantId_shouldThrowResourceNotFoundException() {
         Integer invalidRestaurantId = 1;
 
         assertThatThrownBy(() ->
                 underTest.getTables(invalidRestaurantId)
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void getTable_validInputs_shouldReturnCorrectTableDto() {
+        Integer validRestaurantId = addRestaurantForTesting();
+        TableDto expectedResult = underTest.addTable(validRestaurantId, TableTestData.getAddTableDtoA());
+
+        TableDto result = underTest.getTable(validRestaurantId, expectedResult.getId());
+
+        assertThat(result).isEqualTo(expectedResult);
+    }
+
+    @Test
+    public void getTable_invalidRestaurantId_shouldThrowResourceNotFoundException() {
+        Integer invalidRestaurantId = 1;
+        Integer shouldNotReachTableId = 1;
+
+        assertThatThrownBy(() ->
+                underTest.getTable(invalidRestaurantId, shouldNotReachTableId)
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void getTable_invalidTableId_shouldThrowResourceNotFoundException() {
+        Integer validRestaurantId = addRestaurantForTesting();
+        Integer invalidTableId = 1;
+
+        assertThatThrownBy(() ->
+                underTest.getTable(validRestaurantId, invalidTableId)
         ).isInstanceOf(ResourceNotFoundException.class);
     }
 
