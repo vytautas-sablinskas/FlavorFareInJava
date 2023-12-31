@@ -30,8 +30,4 @@ public class RestaurantEntity {
     private Duration closingTime;
 
     private Duration intervalBetweenBookings;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "restaurant_id")
-    private List<TableEntity> tables;
 }

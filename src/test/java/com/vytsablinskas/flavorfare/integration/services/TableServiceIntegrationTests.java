@@ -181,6 +181,28 @@ public class TableServiceIntegrationTests {
                 underTest.updateTable(validRestaurantId, invalidTableId, TableTestData.getUpdateTableDtoA())
         ).isInstanceOf(ResourceNotFoundException.class);
     }
+
+    @Test
+    public void delete_validIds_shouldDeleteTable() {
+        RestaurantDto restaurantDto = restaurantService.addRestaurant(RestaurantTestData.getAddRestaurantDtoB());
+        TableDto table = underTest.addTable(restaurantDto.getId(), TableTestData.getAddTableDtoA());
+
+        underTest.deleteTable(restaurantDto.getId(), table.getId());
+
+        List<TableDto> tables = underTest.getTables(restaurantDto.getId());
+        assertThat(tables).hasSize(0);
+    }
+
+    @Test
+    public void deleteTable_invalidRestaurantId_shouldThrowTableSizeAlreadyInDatabaseException() {
+        Integer invalidRestaurantId = addRestaurantForTesting();
+        Integer shouldNotReachTableId = 2;
+
+        assertThatThrownBy(() ->
+                underTest.deleteTable(invalidRestaurantId, shouldNotReachTableId)
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
     private Integer addRestaurantForTesting() {
         RestaurantDto restaurantDto = restaurantService.addRestaurant(RestaurantTestData.getAddRestaurantDtoA());
 

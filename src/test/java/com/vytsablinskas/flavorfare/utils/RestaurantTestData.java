@@ -49,14 +49,10 @@ public class RestaurantTestData {
                 .openingTime(Duration.ofHours(3))
                 .closingTime(Duration.ofHours(15))
                 .intervalBetweenBookings(Duration.ofHours(2))
-                .tables(new ArrayList<>())
                 .build();
     }
 
     public static RestaurantEntity getRestaurantEntityWithEntityATable() {
-        List<TableEntity> tables = new ArrayList<>();
-        tables.add(TableTestData.getTableEntityA());
-
         return RestaurantEntity.builder()
                 .restaurantId(4)
                 .name("name entity")
@@ -64,7 +60,6 @@ public class RestaurantTestData {
                 .openingTime(Duration.ofHours(3))
                 .closingTime(Duration.ofHours(15))
                 .intervalBetweenBookings(Duration.ofHours(2))
-                .tables(tables)
                 .build();
     }
 

@@ -21,7 +21,7 @@ public class TableEntity {
 
     private Integer count;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurant;
 }

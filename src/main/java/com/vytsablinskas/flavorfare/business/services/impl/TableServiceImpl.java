@@ -11,18 +11,18 @@ import com.vytsablinskas.flavorfare.shared.constants.Messages;
 import com.vytsablinskas.flavorfare.shared.dtos.table.AddTableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.TableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.UpdateTableDto;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
 @Service
 public class TableServiceImpl implements TableService {
-    private ModelMapper modelMapper;
-    private TableRepository tableRepository;
-    private RestaurantRepository restaurantRepository;
+    private final ModelMapper modelMapper;
+    private final TableRepository tableRepository;
+    private final RestaurantRepository restaurantRepository;
 
     public TableServiceImpl(ModelMapper modelMapper, TableRepository tableRepository, RestaurantRepository restaurantRepository) {
         this.modelMapper = modelMapper;
@@ -37,11 +37,8 @@ public class TableServiceImpl implements TableService {
             throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
         }
 
-        List<TableEntity> tables = StreamSupport
-                .stream(tableRepository.findAll().spliterator(), false)
-                .toList();
-
-        return tables
+        return tableRepository
+                .findByCondition(restaurantId)
                 .stream()
                 .map(entity -> modelMapper.map(entity, TableDto.class))
                 .toList();
@@ -69,7 +66,7 @@ public class TableServiceImpl implements TableService {
             throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
         }
 
-        List<TableEntity> currentTablesInsideRestaurant = restaurantEntity.get().getTables();
+        List<TableEntity> currentTablesInsideRestaurant = tableRepository.findByCondition(restaurantId);
         for (TableEntity table : currentTablesInsideRestaurant) {
             if (table.getSize().equals(addTableDto.getSize())) {
                 throw new TableSizeAlreadyInDatabaseException(Messages.getTableOfSizeIsDuplicateMessage(addTableDto.getSize()));
@@ -95,7 +92,7 @@ public class TableServiceImpl implements TableService {
             throw new ResourceNotFoundException(Messages.getTableNotFoundMessage(tableId));
         }
 
-        List<TableEntity> currentTablesInsideRestaurant = restaurantEntity.get().getTables();
+        List<TableEntity> currentTablesInsideRestaurant = tableRepository.findByCondition(restaurantId);
         for (TableEntity table : currentTablesInsideRestaurant) {
             if (table.getSize().equals(updateTableDto.getSize()) &&
                 !table.getTableId().equals(tableId)) {
@@ -109,5 +106,20 @@ public class TableServiceImpl implements TableService {
         TableEntity updatedEntity = tableRepository.save(tableEntity);
 
         return modelMapper.map(updatedEntity, TableDto.class);
+    }
+
+    @Override
+    public void deleteTable(Integer restaurantId, Integer tableId) {
+        Optional<RestaurantEntity> restaurantEntity = restaurantRepository.findById(restaurantId);
+        if (restaurantEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
+        }
+
+        Optional<TableEntity> optionalTableEntity = tableRepository.findById(tableId);
+        if (optionalTableEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getTableNotFoundMessage(tableId));
+        }
+
+        tableRepository.deleteById(tableId);
     }
 }

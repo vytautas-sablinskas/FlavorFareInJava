@@ -6,6 +6,9 @@ import com.vytsablinskas.flavorfare.shared.dtos.table.AddTableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.TableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.UpdateTableDto;
 
+import java.util.Collections;
+import java.util.List;
+
 public class TableTestData {
     public static AddTableDto getAddTableDtoA() {
         return AddTableDto.builder()
@@ -44,5 +47,11 @@ public class TableTestData {
                 .size(1)
                 .restaurant(RestaurantTestData.getRestaurantEntityA())
                 .build();
+    }
+
+    public static List<TableEntity> getTableEntityListA() {
+        return Collections.singletonList(
+                TableTestData.getTableEntityA()
+        );
     }
 }

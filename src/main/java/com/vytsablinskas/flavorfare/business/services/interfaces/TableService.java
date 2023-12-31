@@ -14,4 +14,6 @@ public interface TableService {
     TableDto addTable(Integer restaurantId, AddTableDto addTableDto);
 
     TableDto updateTable(Integer restaurantId, Integer tableId, UpdateTableDto updateTableDto);
+
+    void deleteTable(Integer restaurantId, Integer tableId);
 }
