@@ -6,8 +6,10 @@ import com.vytsablinskas.flavorfare.business.services.interfaces.RestaurantServi
 import com.vytsablinskas.flavorfare.business.services.interfaces.TableService;
 import com.vytsablinskas.flavorfare.shared.dtos.reservation.AddReservationDto;
 import com.vytsablinskas.flavorfare.shared.dtos.reservation.ReservationDto;
+import com.vytsablinskas.flavorfare.shared.dtos.reservation.UpdateReservationDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.TableDto;
+import com.vytsablinskas.flavorfare.utils.classes.RestaurantTableReservationTuple;
 import com.vytsablinskas.flavorfare.utils.classes.RestaurantTableTuple;
 import com.vytsablinskas.flavorfare.utils.data.ReservationTestData;
 import com.vytsablinskas.flavorfare.utils.data.RestaurantTestData;
@@ -86,11 +88,70 @@ public class ReservationServiceIntegrationTests {
 
     @Test
     public void addReservation_invalidTableId_shouldThrowResourceNotFoundException() {
-        Integer validRestaurantId = addAndGetRestaurantInformation();
+        Integer validRestaurantId = addAndGetRestaurantId();
         Integer invalidTableId = 1;
 
         assertThatThrownBy(() ->
                 underTest.addReservation(validRestaurantId, invalidTableId, ReservationTestData.getAddReservationDtoA())
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void updateReservation_validIds_shouldUpdateReservationAndReturnIt() {
+        RestaurantTableReservationTuple information = addRestaurantWithTableAndReservation();
+        UpdateReservationDto updateReservationDtoA = ReservationTestData.getUpdateReservationDtoA();
+
+        ReservationDto reservationDto = underTest.updateReservation(information.restaurantId(),
+                information.tableId(),
+                information.reservationId(),
+                updateReservationDtoA
+                );
+        ReservationDto reservationInDatabase = underTest.getRestaurantReservations(information.restaurantId())
+                                                         .getFirst();
+
+
+        assertThat(reservationDto).isEqualTo(reservationInDatabase);
+        assertThat(reservationDto.getExtraInformation()).isEqualTo(updateReservationDtoA.getExtraInformation());
+    }
+
+    @Test
+    public void updateReservation_invalidReservationId_shouldThrowResourceNotFoundException() {
+        RestaurantTableTuple restaurantTableTuple = addAndGetRestaurantTableInformation();
+        Integer invalidReservationId = 1;
+
+        assertThatThrownBy(() ->
+                underTest.updateReservation(restaurantTableTuple.restaurantId(),
+                        restaurantTableTuple.tableId(),
+                        invalidReservationId,
+                        ReservationTestData.getUpdateReservationDtoA())
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void updateReservation_invalidTableId_shouldThrowResourceNotFoundException() {
+        Integer restaurantId = addAndGetRestaurantId();
+        Integer invalidTableId = 1;
+        Integer shouldNotReachReservationId = 1;
+
+        assertThatThrownBy(() ->
+                underTest.updateReservation(restaurantId,
+                        invalidTableId,
+                        shouldNotReachReservationId,
+                        ReservationTestData.getUpdateReservationDtoA())
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void updateReservation_invalidRestaurantId_shouldThrowResourceNotFoundException() {
+        Integer invalidRestaurantId = 1;
+        Integer shouldNotReachTableId = 1;
+        Integer shouldNotReachReservationId = 1;
+
+        assertThatThrownBy(() ->
+                underTest.updateReservation(invalidRestaurantId,
+                        shouldNotReachTableId,
+                        shouldNotReachReservationId,
+                        ReservationTestData.getUpdateReservationDtoA())
         ).isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -114,9 +175,21 @@ public class ReservationServiceIntegrationTests {
         return restaurantDto.getId();
     }
 
-    private Integer addAndGetRestaurantInformation() {
+    private Integer addAndGetRestaurantId() {
         RestaurantDto restaurantDto = restaurantService.addRestaurant(RestaurantTestData.getAddRestaurantDtoA());
 
         return restaurantDto.getId();
+    }
+
+    private RestaurantTableReservationTuple addRestaurantWithTableAndReservation() {
+        RestaurantDto restaurantDto = restaurantService.addRestaurant(RestaurantTestData.getAddRestaurantDtoA());
+        TableDto table = tableService.addTable(restaurantDto.getId(), TableTestData.getAddTableDtoA());
+        ReservationDto reservationDto = underTest.addReservation(restaurantDto.getId(), table.getId(), ReservationTestData.getAddReservationDtoA());
+
+        return RestaurantTableReservationTuple.builder()
+                .restaurantId(restaurantDto.getId())
+                .tableId(table.getId())
+                .reservationId(reservationDto.getId())
+                .build();
     }
 }

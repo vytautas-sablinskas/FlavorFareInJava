@@ -39,7 +39,8 @@ public class RestaurantController {
 
     @PutMapping(path = "restaurants/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RestaurantDto updateRestaurant(@PathVariable Integer id, @RequestBody UpdateRestaurantDto updateRestaurantDto) {
+    public RestaurantDto updateRestaurant(@PathVariable Integer id,
+                                          @RequestBody UpdateRestaurantDto updateRestaurantDto) {
         return restaurantService.updateRestaurant(id, updateRestaurantDto);
     }
 

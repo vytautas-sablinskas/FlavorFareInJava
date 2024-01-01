@@ -13,6 +13,8 @@ import com.vytsablinskas.flavorfare.database.repositories.TableRepository;
 import com.vytsablinskas.flavorfare.shared.constants.Messages;
 import com.vytsablinskas.flavorfare.shared.dtos.reservation.AddReservationDto;
 import com.vytsablinskas.flavorfare.shared.dtos.reservation.ReservationDto;
+import com.vytsablinskas.flavorfare.shared.dtos.reservation.UpdateReservationDto;
+import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -71,5 +73,32 @@ public class ReservationServiceImpl implements ReservationService {
         ReservationEntity createdEntity = reservationRepository.save(reservationEntityToAdd);
 
         return modelMapper.map(createdEntity, ReservationDto.class);
+    }
+
+    @Override
+    public ReservationDto updateReservation(Integer restaurantId,
+                                            Integer tableId,
+                                            Integer reservationId,
+                                            UpdateReservationDto updateReservationDto) {
+        Optional<RestaurantEntity> optionalRestaurantEntity = restaurantRepository.findById(restaurantId);
+        if (optionalRestaurantEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
+        }
+
+        Optional<TableEntity> optionalTableEntity = tableRepository.findById(tableId);
+        if (optionalTableEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getTableNotFoundMessage(tableId));
+        }
+
+        Optional<ReservationEntity> optionalReservationEntity = reservationRepository.findById(reservationId);
+        if (optionalReservationEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getReservationNotFoundMessage(reservationId));
+        }
+
+        ReservationEntity reservationEntity = optionalReservationEntity.get();
+        modelMapper.map(updateReservationDto, reservationEntity);
+        ReservationEntity updatedReservation = reservationRepository.save(reservationEntity);
+
+        return modelMapper.map(updatedReservation, ReservationDto.class);
     }
 }

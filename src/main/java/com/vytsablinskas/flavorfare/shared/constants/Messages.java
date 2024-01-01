@@ -9,6 +9,10 @@ public class Messages {
         return String.format("Table by id '%d' was not found", id);
     }
 
+    public static String getReservationNotFoundMessage(Integer id) {
+        return String.format("Reservation by id '%d' was not found", id);
+    }
+
     public static String getTableOfSizeIsDuplicateMessage(Integer size) {
         return String.format("Table of size '%d' already exists", size);
     }

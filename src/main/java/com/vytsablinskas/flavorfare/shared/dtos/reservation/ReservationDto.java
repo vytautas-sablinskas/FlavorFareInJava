@@ -1,6 +1,5 @@
 package com.vytsablinskas.flavorfare.shared.dtos.reservation;
 
-import com.vytsablinskas.flavorfare.database.domain.TableEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

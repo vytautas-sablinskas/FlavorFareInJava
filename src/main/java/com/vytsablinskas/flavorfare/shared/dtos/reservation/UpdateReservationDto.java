@@ -12,9 +12,5 @@ import java.time.LocalDateTime;
 @Builder
 @Data
 public class UpdateReservationDto {
-    private LocalDateTime startTime;
-
-    private LocalDateTime endTime;
-
     private String extraInformation;
 }

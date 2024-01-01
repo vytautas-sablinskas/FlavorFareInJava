@@ -46,7 +46,7 @@ public class TableControllerIntegrationTests {
         RestaurantDto restaurantDto = restaurantService.addRestaurant(RestaurantTestData.getAddRestaurantDtoA());
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get(TableEndpoints.tablesEndpoint(restaurantDto.getId()))
+                MockMvcRequestBuilders.get(TableEndpoints.tables(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isOk()
@@ -58,7 +58,7 @@ public class TableControllerIntegrationTests {
         Integer invalidRestaurantId = 1;
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get(TableEndpoints.tablesEndpoint(invalidRestaurantId))
+                MockMvcRequestBuilders.get(TableEndpoints.tables(invalidRestaurantId))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
@@ -73,7 +73,7 @@ public class TableControllerIntegrationTests {
         TableDto table = tableService.addTable(restaurantDto.getId(), TableTestData.getAddTableDtoA());
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get(TableEndpoints.tablesEndpoint(restaurantDto.getId()))
+                MockMvcRequestBuilders.get(TableEndpoints.tables(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$[0].id").value(table.getId())
@@ -92,7 +92,7 @@ public class TableControllerIntegrationTests {
         TableDto table = tableService.addTable(restaurantDto.getId(), TableTestData.getAddTableDtoA());
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get(TableEndpoints.tableEndpoint(restaurantDto.getId(), table.getId()))
+                MockMvcRequestBuilders.get(TableEndpoints.table(restaurantDto.getId(), table.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isOk()
@@ -105,7 +105,7 @@ public class TableControllerIntegrationTests {
         Integer shouldNotReachTableId = 1;
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get(TableEndpoints.tableEndpoint(invalidRestaurantId, shouldNotReachTableId))
+                MockMvcRequestBuilders.get(TableEndpoints.table(invalidRestaurantId, shouldNotReachTableId))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
@@ -120,7 +120,7 @@ public class TableControllerIntegrationTests {
         Integer invalidTableId = 1;
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get(TableEndpoints.tableEndpoint(restaurantDto.getId(), invalidTableId))
+                MockMvcRequestBuilders.get(TableEndpoints.table(restaurantDto.getId(), invalidTableId))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
@@ -135,7 +135,7 @@ public class TableControllerIntegrationTests {
         TableDto table = tableService.addTable(restaurantDto.getId(), TableTestData.getAddTableDtoA());
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get(TableEndpoints.tableEndpoint(restaurantDto.getId(), table.getId()))
+                MockMvcRequestBuilders.get(TableEndpoints.table(restaurantDto.getId(), table.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.id").value(table.getId())
@@ -155,7 +155,7 @@ public class TableControllerIntegrationTests {
         String addTableDtoJson = objectMapper.writeValueAsString(addTableDtoA);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.post(TableEndpoints.addTableEndpoint(restaurantDto.getId()))
+                MockMvcRequestBuilders.post(TableEndpoints.addTable(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addTableDtoJson)
         ).andExpect(
@@ -170,7 +170,7 @@ public class TableControllerIntegrationTests {
         String addTableDtoJson = objectMapper.writeValueAsString(addTableDtoA);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.post(TableEndpoints.addTableEndpoint(invalidRestaurantId))
+                MockMvcRequestBuilders.post(TableEndpoints.addTable(invalidRestaurantId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addTableDtoJson)
         ).andExpect(
@@ -190,7 +190,7 @@ public class TableControllerIntegrationTests {
         String addTableDtoJson = objectMapper.writeValueAsString(addTableDtoB);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.post(TableEndpoints.addTableEndpoint(restaurantDto.getId()))
+                MockMvcRequestBuilders.post(TableEndpoints.addTable(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addTableDtoJson)
         ).andExpect(
@@ -208,7 +208,7 @@ public class TableControllerIntegrationTests {
 
 
         mockMvc.perform(
-                MockMvcRequestBuilders.post(TableEndpoints.addTableEndpoint(restaurantDto.getId()))
+                MockMvcRequestBuilders.post(TableEndpoints.addTable(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addTableDtoJson)
         ).andExpect(
@@ -230,7 +230,7 @@ public class TableControllerIntegrationTests {
         String addTableDtoJson = objectMapper.writeValueAsString(updateTableDtoA);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.put(TableEndpoints.updateTableEndpoint(restaurantDto.getId(), table.getId()))
+                MockMvcRequestBuilders.put(TableEndpoints.updateTable(restaurantDto.getId(), table.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addTableDtoJson)
         ).andExpect(
@@ -246,7 +246,7 @@ public class TableControllerIntegrationTests {
         String updateTableDtoJson = objectMapper.writeValueAsString(updateTableDto);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.put(TableEndpoints.updateTableEndpoint(invalidRestaurantId, shouldNotReachTableId))
+                MockMvcRequestBuilders.put(TableEndpoints.updateTable(invalidRestaurantId, shouldNotReachTableId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateTableDtoJson)
         ).andExpect(
@@ -263,7 +263,7 @@ public class TableControllerIntegrationTests {
         String updateTableDtoJson = objectMapper.writeValueAsString(TableTestData.getUpdateTableDtoA());
 
         mockMvc.perform(
-                MockMvcRequestBuilders.put(TableEndpoints.updateTableEndpoint(restaurantDto.getId(), invalidTableId))
+                MockMvcRequestBuilders.put(TableEndpoints.updateTable(restaurantDto.getId(), invalidTableId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateTableDtoJson)
         ).andExpect(
@@ -283,7 +283,7 @@ public class TableControllerIntegrationTests {
         String updateTableDtoJson = objectMapper.writeValueAsString(updateTableDtoA);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.put(TableEndpoints.updateTableEndpoint(restaurantDto.getId(), table2.getId()))
+                MockMvcRequestBuilders.put(TableEndpoints.updateTable(restaurantDto.getId(), table2.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateTableDtoJson)
         ).andExpect(
@@ -301,7 +301,7 @@ public class TableControllerIntegrationTests {
         String addTableDtoJson = objectMapper.writeValueAsString(updateTableDtoA);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.put(TableEndpoints.updateTableEndpoint(restaurantDto.getId(), table.getId()))
+                MockMvcRequestBuilders.put(TableEndpoints.updateTable(restaurantDto.getId(), table.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addTableDtoJson)
         ).andExpect(
@@ -321,7 +321,7 @@ public class TableControllerIntegrationTests {
         TableDto table = tableService.addTable(restaurantDto.getId(), TableTestData.getAddTableDtoA());
 
         mockMvc.perform(
-                MockMvcRequestBuilders.delete(TableEndpoints.deleteTableEndpoint(restaurantDto.getId(), table.getId()))
+                MockMvcRequestBuilders.delete(TableEndpoints.deleteTable(restaurantDto.getId(), table.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isNoContent()
@@ -334,7 +334,7 @@ public class TableControllerIntegrationTests {
         Integer shouldNotReachTableId = 1;
 
         mockMvc.perform(
-                MockMvcRequestBuilders.delete(TableEndpoints.deleteTableEndpoint(invalidRestaurantId, shouldNotReachTableId))
+                MockMvcRequestBuilders.delete(TableEndpoints.deleteTable(invalidRestaurantId, shouldNotReachTableId))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
@@ -349,7 +349,7 @@ public class TableControllerIntegrationTests {
         Integer invalidTableId = 1;
 
         mockMvc.perform(
-                MockMvcRequestBuilders.delete(TableEndpoints.deleteTableEndpoint(restaurantDto.getId(), invalidTableId))
+                MockMvcRequestBuilders.delete(TableEndpoints.deleteTable(restaurantDto.getId(), invalidTableId))
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
