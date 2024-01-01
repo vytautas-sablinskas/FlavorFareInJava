@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface TableRepository extends CrudRepository<TableEntity, Integer> {
     @Query("SELECT t FROM TableEntity t WHERE t.restaurant.id = :restaurantId")
-    List<TableEntity> findByCondition(@Param("restaurantId") Integer restaurantId);
+    List<TableEntity> findByRestaurantId(@Param("restaurantId") Integer restaurantId);
 }

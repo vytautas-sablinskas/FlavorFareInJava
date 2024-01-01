@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class TableSizeAlreadyInDatabaseExceptionHandler {
     @ExceptionHandler(TableSizeAlreadyInDatabaseException.class)
     public ResponseEntity<String> handleTableSizeAlreadyInDatabaseException(TableSizeAlreadyInDatabaseException ex) {
-        return new ResponseEntity<String>(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }

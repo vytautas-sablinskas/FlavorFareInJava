@@ -1,4 +1,4 @@
-package com.vytsablinskas.flavorfare.utils;
+package com.vytsablinskas.flavorfare.utils.data;
 
 import com.vytsablinskas.flavorfare.database.domain.TableEntity;
 import com.vytsablinskas.flavorfare.shared.dtos.table.AddTableDto;

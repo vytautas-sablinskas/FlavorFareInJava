@@ -3,16 +3,14 @@ package com.vytsablinskas.flavorfare.unit.services;
 import com.vytsablinskas.flavorfare.business.exceptions.ResourceNotFoundException;
 import com.vytsablinskas.flavorfare.business.exceptions.TableSizeAlreadyInDatabaseException;
 import com.vytsablinskas.flavorfare.business.services.impl.TableServiceImpl;
-import com.vytsablinskas.flavorfare.database.domain.RestaurantEntity;
 import com.vytsablinskas.flavorfare.database.domain.TableEntity;
 import com.vytsablinskas.flavorfare.database.repositories.RestaurantRepository;
 import com.vytsablinskas.flavorfare.database.repositories.TableRepository;
 import com.vytsablinskas.flavorfare.shared.dtos.table.AddTableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.TableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.UpdateTableDto;
-import com.vytsablinskas.flavorfare.utils.RestaurantTestData;
-import com.vytsablinskas.flavorfare.utils.TableTestData;
-import jakarta.persistence.Table;
+import com.vytsablinskas.flavorfare.utils.data.RestaurantTestData;
+import com.vytsablinskas.flavorfare.utils.data.TableTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,8 +18,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,8 +46,8 @@ public class TableServiceUnitTests {
         Integer validRestaurantId = 1;
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
-        when(tableRepositoryMock.findByCondition(validRestaurantId))
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
+        when(tableRepositoryMock.findByRestaurantId(validRestaurantId))
                 .thenReturn(TableTestData.getTableEntityListA());
         when(modelMapperMock.map(any(TableEntity.class), eq(TableDto.class)))
                 .thenReturn(TableDto.builder().build());
@@ -81,10 +77,10 @@ public class TableServiceUnitTests {
         TableDto expectedTable = TableTestData.getTableDtoA();
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
 
         when(tableRepositoryMock.findById(validTableId))
-                .thenReturn(Optional.<TableEntity>of(TableTestData.getTableEntityA()));
+                .thenReturn(Optional.of(TableTestData.getTableEntityA()));
 
         when(modelMapperMock.map(any(TableEntity.class), eq(TableDto.class)))
                 .thenReturn(expectedTable);
@@ -113,7 +109,7 @@ public class TableServiceUnitTests {
         Integer invalidTableId = 1;
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
         when(tableRepositoryMock.findById(invalidTableId))
                 .thenReturn(Optional.empty());
 
@@ -129,7 +125,7 @@ public class TableServiceUnitTests {
         TableDto expectedResult = TableTestData.getTableDtoA();
 
         when(restaurantRepositoryMock.findById(restaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
         when(modelMapperMock.map(any(AddTableDto.class), eq(TableEntity.class)))
                 .thenReturn(tableEntityA);
         when(tableRepositoryMock.save(any(TableEntity.class)))
@@ -150,8 +146,8 @@ public class TableServiceUnitTests {
         addTableDtoA.setSize(TableTestData.getTableEntityA().getSize());
 
         when(restaurantRepositoryMock.findById(restaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
-        when(tableRepositoryMock.findByCondition(restaurantId))
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
+        when(tableRepositoryMock.findByRestaurantId(restaurantId))
                 .thenReturn(TableTestData.getTableEntityListA());
 
         assertThatThrownBy(() ->
@@ -179,9 +175,9 @@ public class TableServiceUnitTests {
         TableDto expectedTable = TableTestData.getTableDtoA();
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
         when(tableRepositoryMock.findById(validTableId))
-                .thenReturn(Optional.<TableEntity>of(tableEntity));
+                .thenReturn(Optional.of(tableEntity));
         doNothing().when(modelMapperMock).map(any(UpdateTableDto.class), any(TableEntity.class));
         when(tableRepositoryMock.save(any(TableEntity.class)))
                 .thenReturn(tableEntity);
@@ -203,10 +199,10 @@ public class TableServiceUnitTests {
         Integer tableIdToUpdate = tableEntityA.getTableId() + 1;
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
         when(tableRepositoryMock.findById(tableIdToUpdate))
-                .thenReturn(Optional.<TableEntity>of(tableEntityA));
-        when(tableRepositoryMock.findByCondition(validRestaurantId))
+                .thenReturn(Optional.of(tableEntityA));
+        when(tableRepositoryMock.findByRestaurantId(validRestaurantId))
                 .thenReturn(TableTestData.getTableEntityListA());
 
         assertThatThrownBy(() ->
@@ -220,7 +216,7 @@ public class TableServiceUnitTests {
         Integer invalidTableId = 1;
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
         when(tableRepositoryMock.findById(invalidTableId))
                 .thenReturn(Optional.empty());
 
@@ -248,9 +244,9 @@ public class TableServiceUnitTests {
         Integer validTableId = 1;
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
         when(tableRepositoryMock.findById(validTableId))
-                .thenReturn(Optional.<TableEntity>of(TableTestData.getTableEntityA()));
+                .thenReturn(Optional.of(TableTestData.getTableEntityA()));
 
         underTest.deleteTable(validRestaurantId, validTableId);
 
@@ -263,7 +259,7 @@ public class TableServiceUnitTests {
         Integer invalidTableId = 1;
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
         when(tableRepositoryMock.findById(invalidTableId))
                 .thenReturn(Optional.empty());
 

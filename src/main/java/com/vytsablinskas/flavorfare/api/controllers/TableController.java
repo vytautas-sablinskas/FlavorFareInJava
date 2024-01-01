@@ -39,7 +39,9 @@ public class TableController {
 
     @PutMapping(path = "restaurants/{restaurantId}/tables/{tableId}")
     @ResponseStatus(HttpStatus.OK)
-    public TableDto updateTable(@PathVariable Integer restaurantId, @PathVariable Integer tableId, @RequestBody UpdateTableDto updateTableDto) {
+    public TableDto updateTable(@PathVariable Integer restaurantId,
+                                @PathVariable Integer tableId,
+                                @RequestBody UpdateTableDto updateTableDto) {
         return tableService.updateTable(restaurantId, tableId, updateTableDto);
     }
 
