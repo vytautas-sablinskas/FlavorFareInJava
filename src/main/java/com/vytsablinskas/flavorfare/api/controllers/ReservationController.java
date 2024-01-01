@@ -46,6 +46,6 @@ public class ReservationController {
     @DeleteMapping(path = "restaurants/{restaurantId}/table/{tableId}/reservations/{reservationId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservationToRestaurantTable(@PathVariable Integer restaurantId, @PathVariable Integer tableId, @PathVariable Integer reservationId) {
-
+        reservationService.deleteReservation(restaurantId, tableId, reservationId);
     }
 }

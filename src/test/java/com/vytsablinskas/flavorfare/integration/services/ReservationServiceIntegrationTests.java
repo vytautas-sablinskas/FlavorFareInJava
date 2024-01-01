@@ -155,6 +155,54 @@ public class ReservationServiceIntegrationTests {
         ).isInstanceOf(ResourceNotFoundException.class);
     }
 
+    @Test
+    public void deleteReservation_validIds_shouldDeleteReservation() {
+        RestaurantTableReservationTuple information = addRestaurantWithTableAndReservation();
+
+        underTest.deleteReservation(information.restaurantId(), information.tableId(), information.reservationId());
+        List<ReservationDto> restaurantReservations = underTest.getRestaurantReservations(information.restaurantId());
+
+        assertThat(restaurantReservations).hasSize(0);
+    }
+
+    @Test
+    public void deleteReservation_invalidReservationId_shouldThrowResourceNotFoundException() {
+        RestaurantTableTuple restaurantTableTuple = addAndGetRestaurantTableInformation();
+        Integer invalidReservationId = 1;
+
+        assertThatThrownBy(() ->
+                underTest.deleteReservation(restaurantTableTuple.restaurantId(),
+                        restaurantTableTuple.tableId(),
+                        invalidReservationId)
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void deleteReservation_invalidTableId_shouldThrowResourceNotFoundException() {
+        Integer validRestaurantId = addAndGetRestaurantId();
+        Integer invalidTableId = 1;
+        Integer shouldNotReachReservationId = 1;
+
+        assertThatThrownBy(() ->
+                underTest.deleteReservation(validRestaurantId,
+                        invalidTableId,
+                        shouldNotReachReservationId)
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void deleteReservation_invalidRestaurantId_shouldThrowResourceNotFoundException() {
+        Integer invalidRestaurantId = 1;
+        Integer shouldNotReachTableId = 1;
+        Integer shouldNotReachReservationId = 1;
+
+        assertThatThrownBy(() ->
+                underTest.deleteReservation(invalidRestaurantId,
+                        shouldNotReachTableId,
+                        shouldNotReachReservationId)
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
     private RestaurantTableTuple addAndGetRestaurantTableInformation() {
         RestaurantDto restaurantDto = restaurantService.addRestaurant(RestaurantTestData.getAddRestaurantDtoA());
         TableDto table = tableService.addTable(restaurantDto.getId(), TableTestData.getAddTableDtoA());

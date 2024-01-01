@@ -2,8 +2,6 @@ package com.vytsablinskas.flavorfare.business.services.impl;
 
 import com.vytsablinskas.flavorfare.business.exceptions.ResourceNotFoundException;
 import com.vytsablinskas.flavorfare.business.services.interfaces.ReservationService;
-import com.vytsablinskas.flavorfare.business.services.interfaces.RestaurantService;
-import com.vytsablinskas.flavorfare.business.services.interfaces.TableService;
 import com.vytsablinskas.flavorfare.database.domain.ReservationEntity;
 import com.vytsablinskas.flavorfare.database.domain.RestaurantEntity;
 import com.vytsablinskas.flavorfare.database.domain.TableEntity;
@@ -14,7 +12,6 @@ import com.vytsablinskas.flavorfare.shared.constants.Messages;
 import com.vytsablinskas.flavorfare.shared.dtos.reservation.AddReservationDto;
 import com.vytsablinskas.flavorfare.shared.dtos.reservation.ReservationDto;
 import com.vytsablinskas.flavorfare.shared.dtos.reservation.UpdateReservationDto;
-import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -100,5 +97,25 @@ public class ReservationServiceImpl implements ReservationService {
         ReservationEntity updatedReservation = reservationRepository.save(reservationEntity);
 
         return modelMapper.map(updatedReservation, ReservationDto.class);
+    }
+
+    @Override
+    public void deleteReservation(Integer restaurantId, Integer tableId, Integer reservationId) {
+        Optional<RestaurantEntity> optionalRestaurantEntity = restaurantRepository.findById(restaurantId);
+        if (optionalRestaurantEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
+        }
+
+        Optional<TableEntity> optionalTableEntity = tableRepository.findById(tableId);
+        if (optionalTableEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getTableNotFoundMessage(tableId));
+        }
+
+        Optional<ReservationEntity> optionalReservationEntity = reservationRepository.findById(reservationId);
+        if (optionalReservationEntity.isEmpty()) {
+            throw new ResourceNotFoundException(Messages.getReservationNotFoundMessage(reservationId));
+        }
+
+        reservationRepository.deleteById(reservationId);
     }
 }

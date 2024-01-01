@@ -28,8 +28,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ReservationServiceUnitTests {
@@ -201,6 +200,76 @@ public class ReservationServiceUnitTests {
                 .thenReturn(Optional.empty());
         assertThatThrownBy(() ->
                 underTest.updateReservation(invalidRestaurantId, shouldNotReachTableId, shouldNotReachReservationId, ReservationTestData.getUpdateReservationDtoA())
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void deleteReservation_validIds_shouldCallDeleteMethod() {
+        Integer validRestaurantId = 1;
+        Integer validTableId = 1;
+        Integer validReservationId = 1;
+        ReservationDto expectedResult = ReservationTestData.getReservationDtoA();
+
+        when(restaurantRepository.findById(validRestaurantId))
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+        when(tableRepository.findById(validTableId))
+                .thenReturn(Optional.<TableEntity>of(TableTestData.getTableEntityA()));
+        when(reservationRepository.findById(validReservationId))
+                .thenReturn(Optional.<ReservationEntity>of(ReservationTestData.getReservationEntityA()));
+
+        underTest.deleteReservation(validRestaurantId, validTableId, validReservationId);
+
+        verify(reservationRepository, times(1)).deleteById(validReservationId);
+    }
+
+    @Test
+    public void deleteReservation_invalidReservationId_shouldThrowResourceNotFoundException() {
+        Integer validRestaurantId = 1;
+        Integer validTableId = 1;
+        Integer validReservationId = 1;
+        ReservationDto expectedResult = ReservationTestData.getReservationDtoA();
+
+        when(restaurantRepository.findById(validRestaurantId))
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+        when(tableRepository.findById(validTableId))
+                .thenReturn(Optional.<TableEntity>of(TableTestData.getTableEntityA()));
+        when(reservationRepository.findById(validReservationId))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                underTest.deleteReservation(validRestaurantId, validTableId, validReservationId)
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void deleteReservation_invalidTableId_shouldThrowResourceNotFoundException() {
+        Integer validRestaurantId = 1;
+        Integer validTableId = 1;
+        Integer validReservationId = 1;
+        ReservationDto expectedResult = ReservationTestData.getReservationDtoA();
+
+        when(restaurantRepository.findById(validRestaurantId))
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+        when(tableRepository.findById(validTableId))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                underTest.deleteReservation(validRestaurantId, validTableId, validReservationId)
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void deleteReservation_invalidRestaurantId_shouldThrowResourceNotFoundException() {
+        Integer validRestaurantId = 1;
+        Integer validTableId = 1;
+        Integer validReservationId = 1;
+        ReservationDto expectedResult = ReservationTestData.getReservationDtoA();
+
+        when(restaurantRepository.findById(validRestaurantId))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                underTest.deleteReservation(validRestaurantId, validTableId, validReservationId)
         ).isInstanceOf(ResourceNotFoundException.class);
     }
 }

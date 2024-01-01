@@ -17,4 +17,6 @@ public interface ReservationService {
                                     Integer tableId,
                                     Integer reservationId,
                                     UpdateReservationDto updateReservationDto);
+
+    void deleteReservation(Integer restaurantId, Integer tableId, Integer reservationId);
 }
