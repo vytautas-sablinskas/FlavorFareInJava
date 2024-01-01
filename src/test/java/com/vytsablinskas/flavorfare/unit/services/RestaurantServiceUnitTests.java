@@ -55,7 +55,7 @@ public class RestaurantServiceUnitTests {
         RestaurantEntity restaurantEntity = RestaurantTestData.getRestaurantEntityA();
 
         when(restaurantRepositoryMock.findById(restaurantEntity.getRestaurantId()))
-                .thenReturn(Optional.<RestaurantEntity>of(restaurantEntity));
+                .thenReturn(Optional.of(restaurantEntity));
         when(modelMapperMock.map(any(RestaurantEntity.class), eq(RestaurantDto.class)))
                 .thenReturn(RestaurantDto.builder().name(restaurantEntity.getName()).build());
 
@@ -101,7 +101,7 @@ public class RestaurantServiceUnitTests {
         RestaurantDto expectedResult = RestaurantTestData.getRestaurantDtoA();
 
         when(restaurantRepositoryMock.findById(idToUpdate))
-                .thenReturn(Optional.<RestaurantEntity>of(restaurantEntity));
+                .thenReturn(Optional.of(restaurantEntity));
         doNothing().when(modelMapperMock).map(any(UpdateRestaurantDto.class), any(RestaurantEntity.class));
         when(restaurantRepositoryMock.save(any(RestaurantEntity.class)))
                 .thenReturn(restaurantEntity);
@@ -130,7 +130,7 @@ public class RestaurantServiceUnitTests {
         Integer validId = 1;
 
         when(restaurantRepositoryMock.findById(validId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
 
         underTest.deleteRestaurant(validId);
 

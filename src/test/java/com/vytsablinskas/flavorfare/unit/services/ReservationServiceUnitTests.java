@@ -3,8 +3,6 @@ package com.vytsablinskas.flavorfare.unit.services;
 import com.vytsablinskas.flavorfare.business.exceptions.ResourceNotFoundException;
 import com.vytsablinskas.flavorfare.business.services.impl.ReservationServiceImpl;
 import com.vytsablinskas.flavorfare.database.domain.ReservationEntity;
-import com.vytsablinskas.flavorfare.database.domain.RestaurantEntity;
-import com.vytsablinskas.flavorfare.database.domain.TableEntity;
 import com.vytsablinskas.flavorfare.database.repositories.ReservationRepository;
 import com.vytsablinskas.flavorfare.database.repositories.RestaurantRepository;
 import com.vytsablinskas.flavorfare.database.repositories.TableRepository;
@@ -25,7 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -53,7 +52,7 @@ public class ReservationServiceUnitTests {
         ReservationDto expectedResult = ReservationTestData.getReservationDtoA();
 
         when(restaurantRepository.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
         when(reservationRepository.findByRestaurantId(any(Integer.class)))
                 .thenReturn(Collections.singletonList(
                         ReservationTestData.getReservationEntityA()
@@ -87,9 +86,9 @@ public class ReservationServiceUnitTests {
         ReservationEntity reservationEntityA = ReservationTestData.getReservationEntityA();
 
         when(restaurantRepository.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
         when(tableRepository.findById(validTableId))
-                .thenReturn(Optional.<TableEntity>of(TableTestData.getTableEntityA()));
+                .thenReturn(Optional.of(TableTestData.getTableEntityA()));
         when(modelMapper.map(any(AddReservationDto.class), eq(ReservationEntity.class)))
                 .thenReturn(reservationEntityA);
         when(reservationRepository.save(any(ReservationEntity.class)))
@@ -108,7 +107,7 @@ public class ReservationServiceUnitTests {
         Integer invalidTableId = 1;
 
         when(restaurantRepository.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
         when(tableRepository.findById(invalidTableId))
                 .thenReturn(Optional.empty());
 
@@ -137,11 +136,11 @@ public class ReservationServiceUnitTests {
         ReservationDto expectedResult = ReservationTestData.getReservationDtoA();
 
         when(restaurantRepository.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
         when(tableRepository.findById(validTableId))
-                .thenReturn(Optional.<TableEntity>of(TableTestData.getTableEntityA()));
+                .thenReturn(Optional.of(TableTestData.getTableEntityA()));
         when(reservationRepository.findById(validReservationId))
-                .thenReturn(Optional.<ReservationEntity>of(ReservationTestData.getReservationEntityA()));
+                .thenReturn(Optional.of(ReservationTestData.getReservationEntityA()));
         doNothing().when(modelMapper).map(any(UpdateReservationDto.class), any(ReservationEntity.class));
         when(reservationRepository.save(any(ReservationEntity.class)))
                 .thenReturn(ReservationTestData.getReservationEntityA());
@@ -163,9 +162,9 @@ public class ReservationServiceUnitTests {
         Integer invalidReservationId = 1;
 
         when(restaurantRepository.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
         when(tableRepository.findById(validTableId))
-                .thenReturn(Optional.<TableEntity>of(TableTestData.getTableEntityA()));
+                .thenReturn(Optional.of(TableTestData.getTableEntityA()));
         when(reservationRepository.findById(invalidReservationId))
                 .thenReturn(Optional.empty());
 
@@ -181,7 +180,7 @@ public class ReservationServiceUnitTests {
         Integer shouldNotReachReservationId = 1;
 
         when(restaurantRepository.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
         when(tableRepository.findById(invalidTableId))
                 .thenReturn(Optional.empty());
 
@@ -208,14 +207,13 @@ public class ReservationServiceUnitTests {
         Integer validRestaurantId = 1;
         Integer validTableId = 1;
         Integer validReservationId = 1;
-        ReservationDto expectedResult = ReservationTestData.getReservationDtoA();
 
         when(restaurantRepository.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
         when(tableRepository.findById(validTableId))
-                .thenReturn(Optional.<TableEntity>of(TableTestData.getTableEntityA()));
+                .thenReturn(Optional.of(TableTestData.getTableEntityA()));
         when(reservationRepository.findById(validReservationId))
-                .thenReturn(Optional.<ReservationEntity>of(ReservationTestData.getReservationEntityA()));
+                .thenReturn(Optional.of(ReservationTestData.getReservationEntityA()));
 
         underTest.deleteReservation(validRestaurantId, validTableId, validReservationId);
 
@@ -227,12 +225,11 @@ public class ReservationServiceUnitTests {
         Integer validRestaurantId = 1;
         Integer validTableId = 1;
         Integer validReservationId = 1;
-        ReservationDto expectedResult = ReservationTestData.getReservationDtoA();
 
         when(restaurantRepository.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
         when(tableRepository.findById(validTableId))
-                .thenReturn(Optional.<TableEntity>of(TableTestData.getTableEntityA()));
+                .thenReturn(Optional.of(TableTestData.getTableEntityA()));
         when(reservationRepository.findById(validReservationId))
                 .thenReturn(Optional.empty());
 
@@ -246,10 +243,9 @@ public class ReservationServiceUnitTests {
         Integer validRestaurantId = 1;
         Integer validTableId = 1;
         Integer validReservationId = 1;
-        ReservationDto expectedResult = ReservationTestData.getReservationDtoA();
 
         when(restaurantRepository.findById(validRestaurantId))
-                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+                .thenReturn(Optional.of(RestaurantTestData.getRestaurantEntityA()));
         when(tableRepository.findById(validTableId))
                 .thenReturn(Optional.empty());
 
@@ -263,7 +259,6 @@ public class ReservationServiceUnitTests {
         Integer validRestaurantId = 1;
         Integer validTableId = 1;
         Integer validReservationId = 1;
-        ReservationDto expectedResult = ReservationTestData.getReservationDtoA();
 
         when(restaurantRepository.findById(validRestaurantId))
                 .thenReturn(Optional.empty());

@@ -5,14 +5,13 @@ import com.vytsablinskas.flavorfare.shared.constants.Prefixes;
 import com.vytsablinskas.flavorfare.shared.dtos.reservation.AddReservationDto;
 import com.vytsablinskas.flavorfare.shared.dtos.reservation.ReservationDto;
 import com.vytsablinskas.flavorfare.shared.dtos.reservation.UpdateReservationDto;
-import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(name = Prefixes.API_V1)
+@RequestMapping(path = Prefixes.API_V1)
 public class ReservationController {
     private final ReservationService reservationService;
 
@@ -26,7 +25,7 @@ public class ReservationController {
         return reservationService.getRestaurantReservations(restaurantId);
     }
 
-    @PostMapping(path = "restaurants/{restaurantId}/table/{tableId}/reservations")
+    @PostMapping(path = "restaurants/{restaurantId}/tables/{tableId}/reservations")
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationDto addReservationToRestaurantTable(@PathVariable Integer restaurantId,
                                                           @PathVariable Integer tableId,
@@ -34,7 +33,7 @@ public class ReservationController {
         return reservationService.addReservation(restaurantId, tableId, addReservationDto);
     }
 
-    @PutMapping(path = "restaurants/{restaurantId}/table/{tableId}/reservations/{reservationId}")
+    @PatchMapping(path = "restaurants/{restaurantId}/tables/{tableId}/reservations/{reservationId}")
     @ResponseStatus(HttpStatus.OK)
     public ReservationDto updateReservationToRestaurantTable(@PathVariable Integer restaurantId,
                                                             @PathVariable Integer tableId,
@@ -43,7 +42,7 @@ public class ReservationController {
         return reservationService.updateReservation(restaurantId, tableId, reservationId, updateReservationDto);
     }
 
-    @DeleteMapping(path = "restaurants/{restaurantId}/table/{tableId}/reservations/{reservationId}")
+    @DeleteMapping(path = "restaurants/{restaurantId}/tables/{tableId}/reservations/{reservationId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservationToRestaurantTable(@PathVariable Integer restaurantId, @PathVariable Integer tableId, @PathVariable Integer reservationId) {
         reservationService.deleteReservation(restaurantId, tableId, reservationId);
