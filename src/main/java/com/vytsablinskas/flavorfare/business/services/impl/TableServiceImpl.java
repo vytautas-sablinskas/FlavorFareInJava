@@ -37,7 +37,7 @@ public class TableServiceImpl implements TableService {
         }
 
         return tableRepository
-                .findByCondition(restaurantId)
+                .findByRestaurantId(restaurantId)
                 .stream()
                 .map(entity -> modelMapper.map(entity, TableDto.class))
                 .toList();
@@ -65,7 +65,7 @@ public class TableServiceImpl implements TableService {
             throw new ResourceNotFoundException(Messages.getRestaurantNotFoundMessage(restaurantId));
         }
 
-        List<TableEntity> currentTablesInsideRestaurant = tableRepository.findByCondition(restaurantId);
+        List<TableEntity> currentTablesInsideRestaurant = tableRepository.findByRestaurantId(restaurantId);
         for (TableEntity table : currentTablesInsideRestaurant) {
             if (table.getSize().equals(addTableDto.getSize())) {
                 throw new TableSizeAlreadyInDatabaseException(Messages.getTableOfSizeIsDuplicateMessage(addTableDto.getSize()));
@@ -91,7 +91,7 @@ public class TableServiceImpl implements TableService {
             throw new ResourceNotFoundException(Messages.getTableNotFoundMessage(tableId));
         }
 
-        List<TableEntity> currentTablesInsideRestaurant = tableRepository.findByCondition(restaurantId);
+        List<TableEntity> currentTablesInsideRestaurant = tableRepository.findByRestaurantId(restaurantId);
         for (TableEntity table : currentTablesInsideRestaurant) {
             if (table.getSize().equals(updateTableDto.getSize()) &&
                 !table.getTableId().equals(tableId)) {

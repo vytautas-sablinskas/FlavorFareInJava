@@ -4,7 +4,7 @@ import com.vytsablinskas.flavorfare.business.exceptions.ResourceNotFoundExceptio
 import com.vytsablinskas.flavorfare.business.services.interfaces.RestaurantService;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.UpdateRestaurantDto;
-import com.vytsablinskas.flavorfare.utils.RestaurantTestData;
+import com.vytsablinskas.flavorfare.utils.data.RestaurantTestData;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -10,9 +10,8 @@ import com.vytsablinskas.flavorfare.database.repositories.TableRepository;
 import com.vytsablinskas.flavorfare.shared.dtos.table.AddTableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.TableDto;
 import com.vytsablinskas.flavorfare.shared.dtos.table.UpdateTableDto;
-import com.vytsablinskas.flavorfare.utils.RestaurantTestData;
-import com.vytsablinskas.flavorfare.utils.TableTestData;
-import jakarta.persistence.Table;
+import com.vytsablinskas.flavorfare.utils.data.RestaurantTestData;
+import com.vytsablinskas.flavorfare.utils.data.TableTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,8 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +48,7 @@ public class TableServiceUnitTests {
 
         when(restaurantRepositoryMock.findById(validRestaurantId))
                 .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
-        when(tableRepositoryMock.findByCondition(validRestaurantId))
+        when(tableRepositoryMock.findByRestaurantId(validRestaurantId))
                 .thenReturn(TableTestData.getTableEntityListA());
         when(modelMapperMock.map(any(TableEntity.class), eq(TableDto.class)))
                 .thenReturn(TableDto.builder().build());
@@ -151,7 +148,7 @@ public class TableServiceUnitTests {
 
         when(restaurantRepositoryMock.findById(restaurantId))
                 .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
-        when(tableRepositoryMock.findByCondition(restaurantId))
+        when(tableRepositoryMock.findByRestaurantId(restaurantId))
                 .thenReturn(TableTestData.getTableEntityListA());
 
         assertThatThrownBy(() ->
@@ -206,7 +203,7 @@ public class TableServiceUnitTests {
                 .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityWithEntityATable()));
         when(tableRepositoryMock.findById(tableIdToUpdate))
                 .thenReturn(Optional.<TableEntity>of(tableEntityA));
-        when(tableRepositoryMock.findByCondition(validRestaurantId))
+        when(tableRepositoryMock.findByRestaurantId(validRestaurantId))
                 .thenReturn(TableTestData.getTableEntityListA());
 
         assertThatThrownBy(() ->

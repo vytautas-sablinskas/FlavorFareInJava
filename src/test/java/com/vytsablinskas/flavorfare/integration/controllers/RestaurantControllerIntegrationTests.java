@@ -7,7 +7,7 @@ import com.vytsablinskas.flavorfare.shared.constants.endpoints.RestaurantEndpoin
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.AddRestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.RestaurantDto;
 import com.vytsablinskas.flavorfare.shared.dtos.restaurant.UpdateRestaurantDto;
-import com.vytsablinskas.flavorfare.utils.RestaurantTestData;
+import com.vytsablinskas.flavorfare.utils.data.RestaurantTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
