@@ -1,4 +1,130 @@
 package com.vytsablinskas.flavorfare.unit.services;
 
+import com.vytsablinskas.flavorfare.business.exceptions.ResourceNotFoundException;
+import com.vytsablinskas.flavorfare.business.services.impl.ReservationServiceImpl;
+import com.vytsablinskas.flavorfare.database.domain.ReservationEntity;
+import com.vytsablinskas.flavorfare.database.domain.RestaurantEntity;
+import com.vytsablinskas.flavorfare.database.domain.TableEntity;
+import com.vytsablinskas.flavorfare.database.repositories.ReservationRepository;
+import com.vytsablinskas.flavorfare.database.repositories.RestaurantRepository;
+import com.vytsablinskas.flavorfare.database.repositories.TableRepository;
+import com.vytsablinskas.flavorfare.shared.dtos.reservation.AddReservationDto;
+import com.vytsablinskas.flavorfare.shared.dtos.reservation.ReservationDto;
+import com.vytsablinskas.flavorfare.utils.data.ReservationTestData;
+import com.vytsablinskas.flavorfare.utils.data.RestaurantTestData;
+import com.vytsablinskas.flavorfare.utils.data.TableTestData;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 public class ReservationServiceUnitTests {
+    @Mock
+    private ModelMapper modelMapper;
+
+    @Mock
+    private ReservationRepository reservationRepository;
+
+    @Mock
+    private TableRepository tableRepository;
+
+    @Mock
+    private RestaurantRepository restaurantRepository;
+
+    @InjectMocks
+    private ReservationServiceImpl underTest;
+
+    @Test
+    public void getRestaurantReservations_validRestaurantId_shouldReturnListOfRestaurantReservations() {
+        Integer validRestaurantId = 1;
+        ReservationDto expectedResult = ReservationTestData.getReservationDtoA();
+
+        when(restaurantRepository.findById(validRestaurantId))
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+        when(reservationRepository.findByRestaurantId(any(Integer.class)))
+                .thenReturn(Collections.singletonList(
+                        ReservationTestData.getReservationEntityA()
+                ));
+        when(modelMapper.map(any(ReservationEntity.class), eq(ReservationDto.class)))
+                .thenReturn(expectedResult);
+
+        List<ReservationDto> restaurantReservations = underTest.getRestaurantReservations(validRestaurantId);
+
+        assertThat(restaurantReservations).hasSize(1);
+        assertThat(restaurantReservations.getFirst()).isEqualTo(expectedResult);
+    }
+
+    @Test
+    public void getRestaurantReservations_invalidRestaurantId_shouldThrowResourceNotFoundException() {
+        Integer invalidRestaurantId = 1;
+
+        when(restaurantRepository.findById(invalidRestaurantId))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+                underTest.getRestaurantReservations(invalidRestaurantId)
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void addReservation_validIds_shouldReturnAddedReservationDto() {
+        Integer validRestaurantId = 1;
+        Integer validTableId = 1;
+        ReservationDto expectedResult = ReservationTestData.getReservationDtoA();
+        ReservationEntity reservationEntityA = ReservationTestData.getReservationEntityA();
+
+        when(restaurantRepository.findById(validRestaurantId))
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+        when(tableRepository.findById(validTableId))
+                .thenReturn(Optional.<TableEntity>of(TableTestData.getTableEntityA()));
+        when(modelMapper.map(any(AddReservationDto.class), eq(ReservationEntity.class)))
+                .thenReturn(reservationEntityA);
+        when(reservationRepository.save(any(ReservationEntity.class)))
+                .thenReturn(reservationEntityA);
+        when(modelMapper.map(any(ReservationEntity.class), eq(ReservationDto.class)))
+                .thenReturn(expectedResult);
+
+        ReservationDto result = underTest.addReservation(validRestaurantId, validTableId, ReservationTestData.getAddReservationDtoA());
+
+        assertThat(expectedResult).isEqualTo(result);
+    }
+
+    @Test
+    public void addReservation_invalidTableId_shouldThrowResourceNotFoundException() {
+        Integer validRestaurantId = 1;
+        Integer invalidTableId = 1;
+
+        when(restaurantRepository.findById(validRestaurantId))
+                .thenReturn(Optional.<RestaurantEntity>of(RestaurantTestData.getRestaurantEntityA()));
+        when(tableRepository.findById(invalidTableId))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+            underTest.addReservation(validRestaurantId, invalidTableId, ReservationTestData.getAddReservationDtoA())
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    public void addReservation_invalidReservationId_shouldThrowResourceNotFoundException() {
+        Integer invalidRestaurantId = 1;
+        Integer shouldNotReachTableId = 1;
+
+        when(restaurantRepository.findById(invalidRestaurantId))
+                .thenReturn(Optional.empty());
+        assertThatThrownBy(() ->
+                underTest.addReservation(invalidRestaurantId, shouldNotReachTableId, ReservationTestData.getAddReservationDtoA())
+        ).isInstanceOf(ResourceNotFoundException.class);
+    }
 }

@@ -1,6 +1,8 @@
 package com.vytsablinskas.flavorfare.utils.data;
 
+import com.vytsablinskas.flavorfare.database.domain.ReservationEntity;
 import com.vytsablinskas.flavorfare.shared.dtos.reservation.AddReservationDto;
+import com.vytsablinskas.flavorfare.shared.dtos.reservation.ReservationDto;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +20,24 @@ public class ReservationTestData {
                 .startTime(LocalDateTime.of(2023, 11, 24, 10, 0))
                 .endTime(LocalDateTime.of(2023, 11, 24, 11, 0))
                 .extraInformation("Near window")
+                .build();
+    }
+
+    public static ReservationDto getReservationDtoA() {
+        return ReservationDto.builder()
+                .startTime(LocalDateTime.of(2022, 11, 24, 10, 0))
+                .endTime(LocalDateTime.of(2022, 11, 24, 11, 0))
+                .extraInformation("test")
+                .build();
+    }
+
+    public static ReservationEntity getReservationEntityA() {
+        return ReservationEntity.builder()
+                .startTime(LocalDateTime.of(2023, 11, 24, 10, 0))
+                .endTime(LocalDateTime.of(2023, 11, 24, 11, 0))
+                .extraInformation("Near window")
+                .id(5)
+                .table(TableTestData.getTableEntityA())
                 .build();
     }
 }
