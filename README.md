@@ -2,7 +2,7 @@
 
 ## Key Features
 
-### For Guests and Members
+### API Features
 - **Manage Restaurants**: Get all restaurants, add, edit, or delete restaurant listings from the platform.
 - **Manage Tables**: Get tables by restaurant id, add, edit, or delete tables in a restaurant.
 - **Manage Reservations**: Get reservations by restaurant id, add, edit or delete reservation for table.
