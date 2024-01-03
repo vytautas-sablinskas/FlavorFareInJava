@@ -17,4 +17,5 @@
   - Unit tests using Mockito for mocking dependencies.
   - Integration tests using an in-memory database.
   - AssertJ for assertions.
+  - 119 Tests were done testing all edge cases of logic of controllers/services
 - **Error Handling**: Global exception handling where errors are thrown at the service layer and caught by exception handlers to return appropriate HTTP statuses with messages.
