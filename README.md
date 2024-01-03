@@ -7,12 +7,10 @@
 - **Manage Tables**: Get tables by restaurant id, add, edit, or delete tables in a restaurant.
 - **Manage Reservations**: Get reservations by restaurant id, add, edit or delete reservation for table.
 
-
-
 ## Technology Stack
 - **Programming Language**: Java
 - **Framework**: Spring Boot
-- **Database**: PostgreSQL with Hibernate for data storage and management.
+- **Database**: PostgreSQL with Hibernate for data storage and management. There's a docker container to initialize it.
 - **Testing**: 
   - Unit tests using Mockito for mocking dependencies.
   - Integration tests using an in-memory database.
