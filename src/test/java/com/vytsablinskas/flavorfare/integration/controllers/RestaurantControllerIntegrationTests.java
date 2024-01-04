@@ -14,16 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
+@WithMockUser
 public class RestaurantControllerIntegrationTests {
     private final MockMvc mockMvc;
     private final RestaurantService restaurantService;
@@ -128,6 +132,7 @@ public class RestaurantControllerIntegrationTests {
                 MockMvcRequestBuilders.post(RestaurantEndpoints.addRestaurant)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addRestaurantDtoJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isCreated()
         );
@@ -142,6 +147,7 @@ public class RestaurantControllerIntegrationTests {
                 MockMvcRequestBuilders.post(RestaurantEndpoints.addRestaurant)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addRestaurantDtoJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.id").isNumber()
         ).andExpect(
@@ -168,6 +174,7 @@ public class RestaurantControllerIntegrationTests {
                 MockMvcRequestBuilders.put(RestaurantEndpoints.updateRestaurant(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateRestaurantDtoJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isOk()
         );
@@ -183,6 +190,7 @@ public class RestaurantControllerIntegrationTests {
                 MockMvcRequestBuilders.put(RestaurantEndpoints.updateRestaurant(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateRestaurantDtoJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.id").value(restaurantDto.getId())
         ).andExpect(
@@ -210,6 +218,7 @@ public class RestaurantControllerIntegrationTests {
                 MockMvcRequestBuilders.put(RestaurantEndpoints.updateRestaurant(invalidId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateRestaurantDto)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
@@ -224,6 +233,7 @@ public class RestaurantControllerIntegrationTests {
         mockMvc.perform(
                 MockMvcRequestBuilders.delete(RestaurantEndpoints.deleteRestaurant(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNoContent()
         );
@@ -237,6 +247,7 @@ public class RestaurantControllerIntegrationTests {
         mockMvc.perform(
                 MockMvcRequestBuilders.delete(RestaurantEndpoints.deleteRestaurant(invalidId))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(

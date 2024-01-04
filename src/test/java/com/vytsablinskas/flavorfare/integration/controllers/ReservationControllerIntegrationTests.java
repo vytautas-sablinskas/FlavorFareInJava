@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,10 +31,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.format.DateTimeFormatter;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
+@WithMockUser
 public class ReservationControllerIntegrationTests {
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
@@ -113,6 +117,7 @@ public class ReservationControllerIntegrationTests {
                                                                                 restaurantTable.tableId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reservationToAddJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isCreated()
         );
@@ -129,6 +134,7 @@ public class ReservationControllerIntegrationTests {
                 MockMvcRequestBuilders.post(ReservationEndpoints.addReservation(invalidRestaurantId, shouldNotReachTableId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reservationToAddJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
@@ -147,6 +153,7 @@ public class ReservationControllerIntegrationTests {
                 MockMvcRequestBuilders.post(ReservationEndpoints.addReservation(validRestaurantId, invalidTableId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reservationToAddJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
@@ -165,6 +172,7 @@ public class ReservationControllerIntegrationTests {
                                 restaurantTable.tableId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(reservationToAddJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.id").isNumber()
         ).andExpect(
@@ -190,6 +198,7 @@ public class ReservationControllerIntegrationTests {
                                 restaurantTableReservation.reservationId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateReservationJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isOk()
         );
@@ -208,6 +217,7 @@ public class ReservationControllerIntegrationTests {
                                 invalidReservationId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateReservationJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
@@ -229,6 +239,7 @@ public class ReservationControllerIntegrationTests {
                                 shouldNotReachReservationId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateReservationJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
@@ -250,6 +261,7 @@ public class ReservationControllerIntegrationTests {
                                 shouldNotReachReservationId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateReservationJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
@@ -270,6 +282,7 @@ public class ReservationControllerIntegrationTests {
                                 restaurantTableReservation.reservationId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateReservationJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.id").isNumber()
         ).andExpect(
@@ -292,6 +305,7 @@ public class ReservationControllerIntegrationTests {
                                 restaurantTableReservation.tableId(),
                                 restaurantTableReservation.reservationId()))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNoContent()
         );
@@ -307,6 +321,7 @@ public class ReservationControllerIntegrationTests {
                                 restaurantTable.tableId(),
                                 invalidReservationId))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
@@ -325,6 +340,7 @@ public class ReservationControllerIntegrationTests {
                                 invalidTableId,
                                 shouldNotReachReservationId))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
@@ -343,6 +359,7 @@ public class ReservationControllerIntegrationTests {
                                 shouldNotReachTableId,
                                 shouldNotReachReservationId))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(

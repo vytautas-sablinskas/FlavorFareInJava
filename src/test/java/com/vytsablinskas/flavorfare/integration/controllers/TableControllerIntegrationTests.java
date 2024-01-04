@@ -17,16 +17,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
+@WithMockUser
 public class TableControllerIntegrationTests {
     private final MockMvc mockMvc;
     private final TableService tableService;
@@ -158,6 +162,7 @@ public class TableControllerIntegrationTests {
                 MockMvcRequestBuilders.post(TableEndpoints.addTable(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addTableDtoJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isCreated()
         );
@@ -173,6 +178,7 @@ public class TableControllerIntegrationTests {
                 MockMvcRequestBuilders.post(TableEndpoints.addTable(invalidRestaurantId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addTableDtoJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
@@ -193,6 +199,7 @@ public class TableControllerIntegrationTests {
                 MockMvcRequestBuilders.post(TableEndpoints.addTable(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addTableDtoJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isUnprocessableEntity()
         ).andExpect(
@@ -211,6 +218,7 @@ public class TableControllerIntegrationTests {
                 MockMvcRequestBuilders.post(TableEndpoints.addTable(restaurantDto.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addTableDtoJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.id").isNumber()
         ).andExpect(
@@ -233,6 +241,7 @@ public class TableControllerIntegrationTests {
                 MockMvcRequestBuilders.put(TableEndpoints.updateTable(restaurantDto.getId(), table.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addTableDtoJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isOk()
         );
@@ -249,6 +258,7 @@ public class TableControllerIntegrationTests {
                 MockMvcRequestBuilders.put(TableEndpoints.updateTable(invalidRestaurantId, shouldNotReachTableId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateTableDtoJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
@@ -266,6 +276,7 @@ public class TableControllerIntegrationTests {
                 MockMvcRequestBuilders.put(TableEndpoints.updateTable(restaurantDto.getId(), invalidTableId))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateTableDtoJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
@@ -286,6 +297,7 @@ public class TableControllerIntegrationTests {
                 MockMvcRequestBuilders.put(TableEndpoints.updateTable(restaurantDto.getId(), table2.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateTableDtoJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isUnprocessableEntity()
         ).andExpect(
@@ -304,6 +316,7 @@ public class TableControllerIntegrationTests {
                 MockMvcRequestBuilders.put(TableEndpoints.updateTable(restaurantDto.getId(), table.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(addTableDtoJson)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.id").value(table.getId())
         ).andExpect(
@@ -323,6 +336,7 @@ public class TableControllerIntegrationTests {
         mockMvc.perform(
                 MockMvcRequestBuilders.delete(TableEndpoints.deleteTable(restaurantDto.getId(), table.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNoContent()
         );
@@ -336,6 +350,7 @@ public class TableControllerIntegrationTests {
         mockMvc.perform(
                 MockMvcRequestBuilders.delete(TableEndpoints.deleteTable(invalidRestaurantId, shouldNotReachTableId))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
@@ -351,6 +366,7 @@ public class TableControllerIntegrationTests {
         mockMvc.perform(
                 MockMvcRequestBuilders.delete(TableEndpoints.deleteTable(restaurantDto.getId(), invalidTableId))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
         ).andExpect(
                 MockMvcResultMatchers.status().isNotFound()
         ).andExpect(
