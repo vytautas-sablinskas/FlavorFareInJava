@@ -17,3 +17,4 @@
   - AssertJ for assertions.
   - In total 119 tests were done to test controllers/services logic with all edge cases included
 - **Error Handling**: Global exception handling where errors are thrown at the service layer and caught by exception handlers to return appropriate HTTP statuses with messages.
+- **Authentication**: The application uses Spring Security, though it's only being developed now.
